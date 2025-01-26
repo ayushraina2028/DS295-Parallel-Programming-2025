@@ -55,11 +55,12 @@ int main() {
 
     // Kernel Parameters
     int threadsPerBlock = 512;
-    int blocksPerGrid = (int)ceil((float)(N/(threadsPerBlock*1.0)));
+    int blocksPerGrid = (int)ceil((float)(N/(threadsPerBlock*1.0))); // This can also be achieved using (N + M - 1)/M;
 
     // Invoke kernel, it has to void return type
     high_resolution_clock::time_point start = high_resolution_clock::now();
     VectorAdditionUsingBlocksAndThreads<<<blocksPerGrid,threadsPerBlock>>> (dA,dB,dC,N);
+    cudaDeviceSynchronize();
     high_resolution_clock::time_point end = high_resolution_clock::now();
 
     // Measure Execution Time
