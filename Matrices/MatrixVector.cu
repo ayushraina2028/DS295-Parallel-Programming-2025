@@ -18,18 +18,17 @@ using namespace chrono;
 __global__ void matrixVectorMult(float* A, float* V,float* Answer, int M, int N) {
     
     int curr_row, curr_col;
-    double sum;
+    float sum = 0;
     curr_row = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(curr_row < M) {
+
         for(curr_col = 0; curr_col < N; curr_col++) {
-            sum += A[M*curr_row + curr_col]*V[curr_col];
+            sum += A[N*curr_row + curr_col]*V[curr_col];
         }
+        Answer[curr_row] = sum;
+
     }
-
-    Answer[curr_row] = sum;
-
-
 }
 
 // CPU Code
@@ -115,7 +114,7 @@ int main() {
     CUDA_CHECK_ERROR(cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice));
 
     int threadsPerBlock = 128;
-    int numBlocks = (int)ceil((float)(m/(threadsPerBlock* 1.0)));
+    int numBlocks = (m + threadsPerBlock - 1) / threadsPerBlock;
     
     // Invoking kernel;
     auto start = getTime();
