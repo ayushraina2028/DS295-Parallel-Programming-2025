@@ -3,6 +3,18 @@
 using namespace std;
 using namespace chrono;
 
+
+#define CUDA_CHECK_ERROR(call) {  \
+    cudaError_t ERROR = call; \
+    if(ERROR != cudaSuccess) { \
+        cerr << "CUDA ERROR: " << cudaGetErrorString(ERROR) << " in file " << __FILE__ << " at line " << __LINE__ << endl; \
+        exit(EXIT_FAILURE); \
+    } \
+    else { \
+        cout << "CUDA CALL SUCCESSFULL: " << #call << " in file " << __FILE__ << " at line " << __LINE__ << endl; \
+    } \
+}  \
+
 // naive version of matrix multiplication on CUDA, we will implement optimized version soon
 __global__ void MatrixMult(int* A, int* B, int* C, int N, int K, int M) {
     int curr_row = blockIdx.y * blockDim.y + threadIdx.y;
@@ -66,8 +78,8 @@ int main() {
     fill(B,K*M);
 
     int *dA, *dB, *dC;
-    cudaMalloc((void**)&dA,sizeA); cudaMalloc((void**)&dB,sizeB); cudaMalloc((void**)&dC,sizeC);
-    cudaMemcpy(dA,A,sizeA,cudaMemcpyHostToDevice); cudaMemcpy(dB,B,sizeB,cudaMemcpyHostToDevice);
+    CUDA_CHECK_ERROR(cudaMalloc((void**)&dA,sizeA)); CUDA_CHECK_ERROR(cudaMalloc((void**)&dB,sizeB)); CUDA_CHECK_ERROR(cudaMalloc((void**)&dC,sizeC));
+    CUDA_CHECK_ERROR(cudaMemcpy(dA,A,sizeA,cudaMemcpyHostToDevice)); CUDA_CHECK_ERROR(cudaMemcpy(dB,B,sizeB,cudaMemcpyHostToDevice));
 
     // Invoking the kernel
     dim3 threadsPerBlock(2,2,1);
@@ -77,15 +89,15 @@ int main() {
     dim3 gridSize(blocksInX,blocksInY,1);
 
     auto s = getTime(); 
-    MatrixMult<<<gridSize,threadsPerBlock>>> (dA,dB,dC,N,K,M); cudaDeviceSynchronize();
+    MatrixMult<<<gridSize,threadsPerBlock>>> (dA,dB,dC,N,K,M); CUDA_CHECK_ERROR(cudaDeviceSynchronize());
     auto e = getTime();
     
 
     nanoseconds durationGPU = duration_cast<nanoseconds> (e - s);
     cout << "Time taken for CUDA Kernel: " << durationGPU.count() << endl;
 
-    cudaMemcpy(C,dC,sizeC,cudaMemcpyDeviceToHost);
-    cudaFree(dA); cudaFree(dB); cudaFree(dC);
+    CUDA_CHECK_ERROR(cudaMemcpy(C,dC,sizeC,cudaMemcpyDeviceToHost));
+    CUDA_CHECK_ERROR(cudaFree(dA)); CUDA_CHECK_ERROR(cudaFree(dB)); CUDA_CHECK_ERROR(cudaFree(dC));
 
     int* C_CPU = (int*)malloc(sizeC);
 
