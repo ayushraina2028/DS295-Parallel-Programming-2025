@@ -3,17 +3,6 @@
 using namespace std;
 using namespace chrono;
 
-#define CUDA_CHECK_ERROR(call) {  \
-    cudaError_t ERROR = call; \
-    if(ERROR != cudaSuccess) { \
-        cerr << "CUDA ERROR: " << cudaGetErrorString(ERROR) << " in file " << __FILE__ << " at line " << __LINE__ << endl; \
-        exit(EXIT_FAILURE); \
-    } \
-    else { \
-        cout << "CUDA CALL SUCCESSFULL: " << #call << " in file " << __FILE__ << " at line " << __LINE__ << endl; \
-    } \
-}  \
-
 // GPU Kernel
 __global__ void matrixVectorMult(float* A, float* V,float* Answer, int M, int N) {
     
@@ -87,13 +76,13 @@ int main() {
 
     // Allocating Space on GPU
     float* dA;
-    CUDA_CHECK_ERROR(cudaMalloc((void**) &dA, size_matrix));
+    cudaMalloc((void**) &dA, size_matrix);
 
     float* dV;
-    CUDA_CHECK_ERROR(cudaMalloc((void**) &dV,size_vector));
+    cudaMalloc((void**) &dV,size_vector);
 
     float* dAnswer;
-    CUDA_CHECK_ERROR(cudaMalloc((void**) &dAnswer,size_answer));
+    cudaMalloc((void**) &dAnswer,size_answer);
 
     // Initialization of Matrix
     for(int i = 0;i < m; i++) {
@@ -110,8 +99,8 @@ int main() {
     // displayVector(V,n);
 
     // Copy
-    CUDA_CHECK_ERROR(cudaMemcpy(dA,A,size_matrix,cudaMemcpyHostToDevice));    
-    CUDA_CHECK_ERROR(cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice));
+    cudaMemcpy(dA,A,size_matrix,cudaMemcpyHostToDevice);    
+    cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice);
 
     int threadsPerBlock = 128;
     int numBlocks = (m + threadsPerBlock - 1) / threadsPerBlock;
@@ -119,7 +108,7 @@ int main() {
     // Invoking kernel;
     auto start = getTime();
     matrixVectorMult<<<numBlocks, threadsPerBlock>>> (dA,dV,dAnswer,m,n);
-    CUDA_CHECK_ERROR(cudaDeviceSynchronize()); // Wait until CUDA kernel finishes completely.
+    cudaDeviceSynchronize(); // Wait until CUDA kernel finishes completely.
     auto end = getTime();
 
     // Time Taken By CUDA
@@ -127,12 +116,12 @@ int main() {
     cout << "Time Taken by GPU Kernel: " << duration.count() << endl;
 
     // Copy Result Back
-    CUDA_CHECK_ERROR(cudaMemcpy(Answer,dAnswer,size_answer,cudaMemcpyDeviceToHost));
+    cudaMemcpy(Answer,dAnswer,size_answer,cudaMemcpyDeviceToHost);
 
     // Free
-    CUDA_CHECK_ERROR(cudaFree(dA));
-    CUDA_CHECK_ERROR(cudaFree(dV));
-    CUDA_CHECK_ERROR(cudaFree(dAnswer));
+    cudaFree(dA);
+    cudaFree(dV);
+    cudaFree(dAnswer);
 
     // Check Output
     displayVector(Answer,m);
