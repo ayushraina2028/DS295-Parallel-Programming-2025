@@ -1,0 +1,240 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package File ~ 'tau.sty'
+% Version 1.1 (15/03/2024)
+%
+% Description:
+% Tau.sty is a package that includes the definition of the
+% environments, presonalized colors and other packages.
+%
+% Author: 
+% Guillermo Jimenez (memo.notess1@gmail.com)
+%
+% Notes:
+% Tau.sty was made for 'tau-book'.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         WARNING:
+% Do not remove this package from the 'tau-book.tex' to 
+% avoid compilation problems. This package defines the 
+% environments, colors and other packages necessary for 
+% tau-book.cls to work.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------
+% Package configuration
+%----------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tau}[2024/03/15]
+
+%----------------------------------------------------------
+% Math
+%----------------------------------------------------------
+
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+% \RequirePackage{amssymb}
+\RequirePackage{mathtools}
+
+%----------------------------------------------------------
+% Misc packages
+%----------------------------------------------------------
+
+\RequirePackage{bookmark}
+\RequirePackage{ragged2e}
+\RequirePackage{lipsum}
+\RequirePackage{chemfig}         % Chemical structures
+\RequirePackage{circuitikz}      % Circuits schematics
+\usepackage[switch]{lineno}
+\usepackage{csquotes}
+\usepackage{supertabular}
+\usepackage{matlab-prettifier}
+\usepackage{cleveref}
+\RequirePackage{listings}
+
+%----------------------------------------------------------
+% Items
+%----------------------------------------------------------
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%----------------------------------------------------------
+% Tables
+%----------------------------------------------------------
+
+\usepackage{booktabs}
+\usepackage{array} 
+
+%----------------------------------------------------------
+% Fonts
+%----------------------------------------------------------
+
+\RequirePackage{fontawesome5}    % For icons
+% \RequirePackage{lettrine}
+% \RequirePackage{pifont}
+% \usepackage[sc]{mathpazo}	% Use the Palatino font
+% \usepackage[oldstyle,oldstylemath]{kpfonts}	% Stylish old font
+% \RequirePackage{times}
+% \RequirePackage{XCharter}
+% \RequirePackage{mathpazo} 
+% \RequirePackage{lmodern}
+
+%----------------------------------------------------------
+% Color
+%----------------------------------------------------------
+
+\RequirePackage{xcolor}
+
+%----------------------------------------------------------
+% Custom colors
+%----------------------------------------------------------
+
+\definecolor{taublue}{RGB}{25,25,115}
+\definecolor{taubluetext}{RGB}{0,101,165}
+\definecolor{taublueback}{RGB}{205,217,235}
+
+%----------------------------------------------------------
+% Figures
+%----------------------------------------------------------
+
+\usepackage{graphicx}
+\RequirePackage{here}
+
+%----------------------------------------------------------
+% Tables
+%----------------------------------------------------------
+
+\usepackage{adjustbox}
+\RequirePackage{colortbl}
+\RequirePackage{tcolorbox}
+
+%----------------------------------------------------------
+% Frames with tikz
+%----------------------------------------------------------
+
+\RequirePackage[framemethod=tikz]{mdframed}
+
+%----------------------------------------------------------
+
+\mdfdefinestyle{warning}{
+	topline=false, bottomline=false,
+	leftline=false, rightline=false,
+	nobreak,
+	singleextra={%
+		\draw(P-|O)++(-0.5em,0)node(tmp1){};
+		\draw(P-|O)++(0.5em,0)node(tmp2){};
+		\fill[taublue,rotate around={45:(P-|O)}](tmp1)rectangle(tmp2);
+		\node at(P-|O){\color{white}\scriptsize\bf !};
+		\draw[very thick,color=taublue](P-|O)++(0,-1em)--(O);%--(O-|P);
+	}
+}
+
+\newenvironment{warn}[1][\color{taublue}Warn:]{
+	\medskip
+	\begin{mdframed}[style=warning]
+		\noindent{\textbf{#1}}
+	}{
+	\end{mdframed}
+}
+
+%----------------------------------------------------------
+
+\mdfdefinestyle{information}{
+	topline=false, bottomline=false,
+	leftline=false, rightline=false,
+	nobreak,
+	singleextra={%
+		\fill[taublue](P-|O)circle[radius=0.4em];			% black
+		\node at(P-|O){\color{white}\scriptsize\bf i};
+		\draw[very thick,color=taublue](P-|O)++(0,-0.8em)--(O);
+	}
+}
+
+\newenvironment{info2}[1][\color{taublue}Info:]{
+	\medskip
+	\begin{mdframed}[style=information]
+		\noindent{\textbf{#1}}
+	}{
+	\end{mdframed}
+}
+
+%----------------------------------------------------------
+
+\mdfdefinestyle{link}{
+	topline=false, bottomline=false,
+	leftline=false, rightline=false,
+	nobreak,
+	singleextra={%
+		\fill[taublue](P-|O)circle[radius=0.4em];		% black
+		\node at(P-|O){\color{white}\tiny\faLink};
+		\draw[very thick,color=taublue](P-|O)++(0,-0.8em)--(O);
+	}
+}
+
+\newenvironment{link}[1][\color{taublue}Link:]{
+	\medskip
+	\begin{mdframed}[style=link]
+		\noindent{\textbf{#1}}
+	}{
+	\end{mdframed}
+}
+
+%----------------------------------------------------------
+% Tau-book environments
+%----------------------------------------------------------
+
+\newcommand{\infolanguage}{
+    \iflanguage{spanish}{
+        {\bfseries\noindent Informaci\'on}%
+    }{%
+        {\bfseries\noindent Information}%
+    }%
+}
+
+\newmdenv[
+	backgroundcolor=taublue!22, 						% taublueback
+	linecolor=taublue,									% taubluetext
+	linewidth=0.7pt,
+	frametitle=\vskip0pt\bfseries\infolanguage,
+	frametitlerule=false,
+	frametitlefont=\color{taublue}\bfseries,			% taubluetext
+	frametitlealignment=\raggedright,
+	innertopmargin=3pt,
+	innerbottommargin=6pt,
+	innerleftmargin=6pt,
+	innerrightmargin=6pt,
+	font=\normalfont,
+	fontcolor=taublue,									% taubluetext
+	frametitleaboveskip=3pt.
+]{info}
+
+%----------------------------------------------------------
+
+\newcommand{\notelanguage}{
+    \iflanguage{spanish}{
+        {\bfseries\noindent Nota}%
+    }{%
+        {\bfseries\noindent Note}%
+    }%
+}
+
+\newmdenv[
+	backgroundcolor=taublue!22, 						% taublueback
+	linecolor=taublue,									% taubluetext
+	linewidth=0.7pt,
+	frametitle=\vskip0pt\bfseries\notelanguage,
+	frametitlerule=false,
+	frametitlefont=\color{taublue}\bfseries,			% taubluetext
+	frametitlealignment=\raggedright,
+	innertopmargin=3pt,
+	innerbottommargin=6pt,
+	innerleftmargin=6pt,
+	innerrightmargin=6pt,
+	font=\normalfont,
+	fontcolor=taublue,									% taubluetext
+	frametitleaboveskip=3pt.
+]{note}
+
+%----------------------------------------------------------
+
+\endinput
