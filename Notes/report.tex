@@ -171,6 +171,23 @@ This gives a bound on the performance of an application on a particular architec
 \subsection*{Questions / Doubts}
 1. Discuss this Roofline Model again with Professor and work out some examples. \\
 
-\section*{Lecture 4: Parallel Programming Models}
+\section*{Lecture 4.1: Parallel Programming Models}
+Some parallel programming models include Single Program Multiple Data (SPMD) and Multiple Program Multiple Data (MPMD). We will focus on SPMD model. \\
+
+\subsection*{Programming Paradigms}
+\begin{enumerate}
+    \item Shared Memory Model: Threads, Open MP, CUDA.
+    \item Distributed Memory Model: MPI - Message Passing Interface.
+\end{enumerate}
+
+\subsection*{Data Parallelism and Domain Decomposition}
+Given data is divided into processing entities. Each process owns and computes a portion of the data.\\
+Multidimensional Data in simulations is divided into subdomains and each subdomain is assigned to a processing entity. This is called \textbf{Domain Decomposition}. 
+
+\subsection*{Process Grids} 
+Given P processors are arranged in multi dimensions forming a process grid. Once this is done then domain of problem is divided in process grid.
+
+\subsection*{Distribution of Data}
+There are various ways of distributing data like block distribution, cyclic distribution, block cyclic distribution etc. Check Parallelization Principles pdf in good notes for visualization.
 
 \end{document}
