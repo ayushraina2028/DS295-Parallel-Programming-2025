@@ -190,4 +190,89 @@ Given P processors are arranged in multi dimensions forming a process grid. Once
 \subsection*{Distribution of Data}
 There are various ways of distributing data like block distribution, cyclic distribution, block cyclic distribution etc. Check Parallelization Principles pdf in good notes for visualization.
 
+\section*{Lecture 4.2: PRAM Model}
+PRAM Stands for Parallel Random Access Machine. Helps to write precursor (initial version) parallel algorithms without any architecture constraints. Allows algorithm designers to treat processing power as unlimited and it ignores complexity of inter communication.
+
+\subsection*{Benefits of PRAM Model}
+\begin{enumerate}
+    \item Helps in designing parallel algorithms as PRAM provides a basic structure that can be adapted to real world parallel machines.
+    \item Base PRAM algorithm can help establish tight lower and upper bounds for practical implementations and assumptions made in PRAM model helps architecture designers for improving their designs.
+    \item Can be suitable for modern day architectures like GPU's.
+\end{enumerate}
+
+\newpage
+
+\subsection*{PRAM Model Architecture}
+The PRAM can be viewed as an ideal shared memory architecture that does not consider any overheads. . Thus, when designing PRAM algorithms we can focus on the best possible parallel algorithm design. Asymptotic runtimes of optimal PRAM algorithms can often be 
+taken as lower bounds for implementations on actual machines.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Images/PRAM.png}
+    \caption{PRAM Model}
+\end{figure}
+
+PRAM consists of $n$ identical processors $P_i$ for $0 \leq i \leq n-1$. In every step each processor executes an instruction cycle in three phases:
+\begin{enumerate}
+    \item \textbf{Read Phase:} Each processor can simultaneously read a single data item from a (distinct) shared memory cell and store it in a local register.
+    \item \textbf{Compute Phase:} Each processor can perform a fundamental operation on its local data and subsequently stores the result in a register.
+    \item \textbf{Write Phase:} Each processor can simultaneously write a data item to a shared memory cell,whereby the exclusive write PRAM variant allows writing only distinct cells while concurrent write PRAM variant also allows processors to write to the same location which can lead to race conditions.
+\end{enumerate} 
+
+Three phase PRAM instructions are executed synchronously. Communications between the processors in the PRAM needs to be implemented in terms of reading and writing to shared memory. This type of memory can be accessed in a uniform way; i.e., each processor has access to any memory location in unit (constant) time. This makes it more powerful than real shared memory machines in which accesses to (a large) shared memory is usually non-uniform and much slower compared to performing computation on registers. The PRAM can therefore be regarded as an idealized model of a shared memory machine; e.g. we cannot expect that a solution for a real parallel machine is more efficient
+than an optimal PRAM algorithm.
+
+\subsection*{PRAM Variants}
+Several types of PRAM variants have been defined which differ in how data in shared memory can be read/written: only exclusively or concurrently. So we have 4 possible combinations
+\textbf{ER} - Exclusive Read, \textbf{CR} - Concurrent Read, \textbf{EW} - Exclusive Write, \textbf{CW} - Concurrent Write. These are also shown in Figure 2.2.
+We now describe three most popular variants the EREW, CREW, and CRCW PRAMs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Images/PRAM2.png}
+    \caption{PRAM Variants}
+\end{figure}
+
+\subsection*{EREW PRAM}
+EREW stands for Exclusive Read Exclusive Write. No two processors are allowed to read or write to the same memory location during same cycle.
+
+\subsection*{CREW PRAM}
+CREW stands for Concurrent Read Exclusive Write. Several processors may read data from the same shared memory cell simultaneously. Still, different processors are not allowed to write to the same shared memory cell.
+
+\subsection*{CRCW PRAM}
+CRCW stands for Concurrent Read Concurrent Write. Both simultaneous reads and writes to the same shared memory cell are allowed in this variant. In case of a simultaneous write (analogous to a race condition) we need to further specify which value will actually be stored. \\
+
+There are 4 common approaches to deal with the situation where two or more processors attempt to write to same memory location during the same clock cycle are:
+\begin{enumerate}
+    \item Priority Concurrent Write (CW) - Processors have been assigned distinct priorities and the processor with the highest priority succeeds in writing its value to the shared memory.
+    \item Arbitary Concurrent Write (CW) - A randomly choosen processor succeeds in writing its value to the shared memory.
+    \item Common Concurrent Write (CW) - All processors writing to same global memory must write the same value.
+    \item Combining Concurrent Write (CW) - All values to be written are combined into a single value by means of an associative binary operations such as sum, product, minimum, or logical AND.
+\end{enumerate}
+
+\subsection*{Parallel Prefix Sum Computation}
+1. First method involves spawnning N threads and each thread computes one element of the prefix sum array. Here is simple CUDA kernel code for this one assuming that threads are distributed in such a way global thread ID $\leq N-1$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Images/prefix1.png}
+    \caption{Prefix Sum CUDA Kernel}
+\end{figure}
+
+2. Second method is slightly better approach than first one and is easy to understand from followig figure
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Images/prefix2method.png}
+    \caption{Prefix Sum Approach 2}
+\end{figure}
+
+Here is the CUDA kernel code for this method.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/prefix2.png}
+    \caption{Prefix Sum CUDA Kernel}
+\end{figure}
+
 \end{document}
