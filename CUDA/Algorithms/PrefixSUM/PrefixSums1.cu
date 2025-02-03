@@ -7,6 +7,9 @@ using namespace chrono;
 /* 
 Parallel Programming is easy as long as you don't care about performance, In this version I will spawn n threads to calculate each partial prefix sum
 I know, I am going to implement this shit code but still for the purpose of learning, I will do
+
+O(N^2)
+
  */
 
 __global__ void NaivePrefixSum(int* A, int* C) {

@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1738438614.13894 "/home/ayushraina/Desktop/ParallelProgramming/Notes/report.tex" "report.pdf" "report" 1738438614.59727 0
+["pdflatex"] 1738580646.8915 "/home/ayushraina/Desktop/ParallelProgramming/Notes/report.tex" "report.pdf" "report" 1738580647.40402 0
   "/etc/texmf/web2c/texmf.cnf" 1738186821.13263 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/ayushraina/Desktop/ParallelProgramming/Notes/report.tex" 1738438613.49624 21174 81efab0b301b61c6363acb61224be84c ""
+  "/home/ayushraina/Desktop/ParallelProgramming/Notes/report.tex" 1738580646.68498 22482 22ce0da86391402338561ff68fad88df ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -61,12 +61,14 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1738188486 8214891 0974fe0f8d1af362d8e33df10e9abb94 ""
   "Images/PRAM.png" 1738432384.81251 87124 f9bb9d1a3373e83386a15bc3fbe5d761 ""
   "Images/PRAM2.png" 1738433171.6359 79584 6312d42e12cf43a3481f62a52a62874d ""
+  "Images/binarySearch.png" 1738580460.01257 41022 132769f03a98d164b9b3aeac759446e7 ""
+  "Images/mergeList1.png" 1738580431.58081 55024 c1cadb8e821a98058ca71504290efe36 ""
   "Images/prefix1.png" 1738436415.52789 26703 71a0cf84462feab4833f287f56f55616 ""
   "Images/prefix2.png" 1738438281.66469 40229 b242b21d7d857f9732d835f62c66e0e5 ""
   "Images/prefix2method.png" 1738438338.87264 91849 ac3433b49612a46d027f31cd3ad52d2d ""
   "overheads.png" 1738400860.95075 39197 adaa81f2835b4464f695d1d7a89bf0f8 ""
-  "report.aux" 1738438614.56929 747 33bff97c85670482b9229317063d6342 "pdflatex"
-  "report.tex" 1738438613.49624 21174 81efab0b301b61c6363acb61224be84c ""
+  "report.aux" 1738580647.375 1068 523c7b9afaf774f6033651954f8e4bd3 "pdflatex"
+  "report.tex" 1738580646.68498 22482 22ce0da86391402338561ff68fad88df ""
   (generated)
   "report.aux"
   "report.log"

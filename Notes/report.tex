@@ -256,7 +256,7 @@ There are 4 common approaches to deal with the situation where two or more proce
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{Images/prefix1.png}
-    \caption{Prefix Sum CUDA Kernel}
+    \caption{Prefix Sum CUDA Kernel $\mathcal{O}(n^2)$}
 \end{figure}
 
 2. Second method is slightly better approach than first one and is easy to understand from followig figure
@@ -264,7 +264,7 @@ There are 4 common approaches to deal with the situation where two or more proce
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.6\textwidth]{Images/prefix2method.png}
-    \caption{Prefix Sum Approach 2}
+    \caption{Prefix Sum Approach 2 $\mathcal{O}(nlogn)$}
 \end{figure}
 
 Here is the CUDA kernel code for this method.
@@ -274,5 +274,34 @@ Here is the CUDA kernel code for this method.
     \includegraphics[width=0.8\textwidth]{Images/prefix2.png}
     \caption{Prefix Sum CUDA Kernel}
 \end{figure}
+
+\newpage
+\subsection*{Parallel Merge of 2 Sorted Lists}
+Normally merge of two sorted lists takes $\mathcal{O}(m+n)$ time and $\mathcal{O}(m+n)$ space. Where as if we have to do this in constant space then it will take $\mathcal{O}(mlogm + nlogn)$ time, Here in our parallel algorithm we will have $n$ processors for $n$ elements in first list and $m$ processors for $m$ elements in second list.
+
+\begin{itemize}
+    \item The processor knows index of element in own list.
+    \item It then finds the index of element in other list using binary search.
+    \item sum of these two indices gives the index of element in merged list.
+    \item Write the element to this index in merged list.
+\end{itemize}
+
+Clearly we can see that the complexity is $\mathcal{O}(nlogm + mlogn)$. Here is the CUDA kernel code for this algorithm. This algorithm will only work if all elements in both lists are \textbf{distinct}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{Images/mergeList1.png}
+    \caption{Merge of 2 Sorted Lists CUDA Kernel}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{Images/binarySearch.png}
+    \caption{Device Function for Binary Search}
+\end{figure}
+
+\newpage
+
+\subsection*{Enumeration Sort}
 
 \end{document}

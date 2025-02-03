@@ -121,6 +121,16 @@ INPUT ./Images/prefix2.png
 INPUT ./Images/prefix2.png
 INPUT ./Images/prefix2.png
 INPUT ./Images/prefix2.png
+INPUT ./Images/mergeList1.png
+INPUT ./Images/mergeList1.png
+INPUT ./Images/mergeList1.png
+INPUT ./Images/mergeList1.png
+INPUT ./Images/mergeList1.png
+INPUT ./Images/binarySearch.png
+INPUT ./Images/binarySearch.png
+INPUT ./Images/binarySearch.png
+INPUT ./Images/binarySearch.png
+INPUT ./Images/binarySearch.png
 INPUT report.aux
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb

@@ -3,13 +3,15 @@
 using namespace std;
 using namespace chrono;
 
+// O(n log n)
+
 __global__ void PrefixSum2(int* A, int* C, int N) {
     int index = threadIdx.x;
     for(int stride = 1; stride < N; stride *= 2) {
 
         if(index + stride < N) {
             C[index + stride] += C[index];
-            printf("Added A[%d] to C[%d] \n", index, index+stride);
+            // printf("Added A[%d] to C[%d] \n", index, index+stride);
         }
 
     }
