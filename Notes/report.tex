@@ -422,4 +422,57 @@ This Post processing step is not needed if all the elements are distinct. If the
     }
 \end{lstlisting}
 
+\newpage
+
+\section*{Lecture 5.1: Many Core Architectures}
+
+\subsection*{Introduction}
+A single CPU can consists of maximum 128 cores whereas GPU consists of large number of light weighted cores. Less computational part of the program runs on CPU and highly parallel part of the program runs on GPU. \\
+NVIDIA's GPU Architecture is called \textbf{CUDA - Compute Unified Device Architecture}.
+
+\subsection*{NVIDIA A100 GPU Architecture} 
+\begin{enumerate}
+    \item CUDA has hierarchical architecture. It consists of 7 Graphical Processing Clusters (GPCs).
+    \item It has 7 or 8 Texture Processing Clusters (TPCs) per GPC. If we assume 8 then we have 56 TPCs in total.
+    \item It has 2 Streaming Multiprocessors (SMs) per TPC. Hence upto 16 SMs/GPC.
+    \item It has 108 SMs in total.
+\end{enumerate}
+
+\subsection*{Streaming Multiprocessors (SMs)}
+\begin{enumerate}
+    \item 64 FP32 Cuda Cores per SM, Hence $64 * 108 = 6912$ FP32 Cuda Cores per GPU.
+    \item 4 third Generation Tensor Cores per SM. Hence $4 * 108 = 432$ Tensor Cores per GPU. These can together deliver 1024 FP16 / FP32 operations per clock.
+    \item 192 KB of combined shared memory and L1 cache per SM which is 1.5x larger than V100.
+\end{enumerate}
+
+\subsection*{Tensor Cores}
+\begin{enumerate}
+    \item Tensor Cores are specialized high-performance compute cores for matrix math operations that provide groundbreaking performance for AI and HPC applications. 
+    \item Tensor Cores perform matrix
+    multiply and accumulate (MMA) calculations. Hundreds of Tensor Cores operating in parallel in one NVIDIA GPU enable massive increases in throughput and efficiency
+\end{enumerate}
+
+\subsection*{Memory Hierarchy}
+\begin{enumerate}
+    \item \textbf{Global or Device Memory (DRAM): }This is largest, slowest and most abundant memory on a GPU and this can be accessed by all threads executing in all the SMs. It has high latency. It can also be accessed by CPU Host. In A100 GPU we have 80 GB of Device Memory.
+    \item \textbf{Shared Memory (On-Chip Memory): }This is available in each SM. This is a small but fast memory that is shared by threads within the same block. It is much faster than global memory because it's physically closer to the cores. In A100 it is around 192 KB per SM. Lower latency as compared to global memory.
+    \item \textbf{Registers: } Each thread has its own registers which is used for storing local data of threads. In A100 there are 64K registers per SM.
+    \item \textbf{Constant and Texture Memory: } Used to improve performance of reads that exhibit spatial locality among threads making it efficient for 2D or 3D image data. It can be accessed by all threads.
+\end{enumerate}
+
+\subsection*{Latency of Data Accesses}
+1. Device Memory: 200-400 clock cycles about 300ns. \\
+2. Shared Memory: 20-30 clock cycles about 5ns. \\
+
+\subsection*{Difference with CPU Threads}
+1. Context switching in GPUs is faster because thread states are kept in registers and shared memory until execution is complete, minimizing delays. \\
+2. Cache management in GPUs is explicit, meaning the programmer needs to handle moving frequently used data into shared memory for faster access, whereas in CPUs, the hardware automatically manages the cache.
+
+\subsection*{Questions}
+1. Is constant and texture memory accessible to threads among any SM ? \\
+2. Algebra of 108 SMs in A100 GPU. \\
+3. What is GA100 and meaning of line A100 GPU implementation of GA100. \\
+
+\section*{Lecture 5.2: CUDA Programming}
+
 \end{document}
