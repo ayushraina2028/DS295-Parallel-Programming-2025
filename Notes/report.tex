@@ -1,10 +1,39 @@
 \documentclass{article}
-
+\usepackage{listings} % For code formatting
 \usepackage[utf8]{inputenc}  % For encoding support
 \usepackage{amsmath}         % For mathematical formatting
 \usepackage{graphicx}        % For including images
 \usepackage{xcolor}
 \usepackage[a4paper, left=0.5in, right=0.5in, top=0.5in, bottom=0.5in]{geometry}  % Adjust margins here
+\usepackage{tcolorbox}
+\usepackage{inconsolata}  % Use Inconsolata font (or replace with your choice)
+
+% Define colors
+\definecolor{codebg}{RGB}{240, 240, 240}  % Light gray background
+\definecolor{framecolor}{RGB}{100, 100, 100}  % Dark gray frame
+\definecolor{titlebg}{RGB}{30, 30, 30}  % Dark title background
+\definecolor{titlefg}{RGB}{255, 255, 255}  % White title text
+
+% Custom lstset
+\lstset{
+    language=C++,                    
+    basicstyle=\ttfamily\footnotesize\fontfamily{zi4}\selectfont, % Use Inconsolata
+    keywordstyle=\bfseries\color{blue},        
+    commentstyle=\itshape\color{gray},        
+    stringstyle=\color{red},          
+    numbers=left,                     
+    numberstyle=\tiny\color{gray},    
+    frame=single,                     
+    breaklines=true,                   
+    captionpos=b,                      
+    backgroundcolor=\color{codebg},  % Light gray background
+    rulecolor=\color{framecolor},    % Dark frame
+    tabsize=4                         
+}
+
+% Custom command to add a styled heading
+\newtcbox{\codebox}{colback=titlebg, colframe=titlebg, colupper=titlefg, 
+  boxrule=0pt, arc=5pt, left=5pt, right=5pt, top=3pt, bottom=3pt}
 
 \title{Parallel Programming Notes}
 \author{Ayush Raina}
@@ -253,11 +282,22 @@ There are 4 common approaches to deal with the situation where two or more proce
 \subsection*{Parallel Prefix Sum Computation}
 1. First method involves spawnning N threads and each thread computes one element of the prefix sum array. Here is simple CUDA kernel code for this one assuming that threads are distributed in such a way global thread ID $\leq N-1$.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\textwidth]{Images/prefix1.png}
-    \caption{Prefix Sum CUDA Kernel $\mathcal{O}(n^2)$}
-\end{figure}
+\codebox{\textbf{Prefix Sum CUDA Kernel Implementation $\mathcal{O}(n^2)$}}
+
+\begin{lstlisting}
+__global__ void NaivePrefixSum(int* A, int* C) {
+    int index = threadIdx.x;
+
+    int sum = 0;
+    for(int i = 0;i <= index; i++) {
+        sum += A[i];
+    }
+
+    C[index] = sum;
+}
+\end{lstlisting}
+
+\newpage
 
 2. Second method is slightly better approach than first one and is easy to understand from followig figure
 
@@ -267,15 +307,21 @@ There are 4 common approaches to deal with the situation where two or more proce
     \caption{Prefix Sum Approach 2 $\mathcal{O}(nlogn)$}
 \end{figure}
 
-Here is the CUDA kernel code for this method.
+\codebox{\textbf{Prefix Sum Approach 2 $\mathcal{O}(nlogn)$}}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{Images/prefix2.png}
-    \caption{Prefix Sum CUDA Kernel}
-\end{figure}
+\begin{lstlisting}
+__global__ void PrefixSum2(int* A, int* C, int N) {
+    int index = threadIdx.x;
+    for(int stride = 1; stride < N; stride *= 2) {
 
-\newpage
+        if(index + stride < N) {
+            C[index + stride] += C[index];
+        }
+
+    }
+}
+\end{lstlisting}
+
 \subsection*{Parallel Merge of 2 Sorted Lists}
 Normally merge of two sorted lists takes $\mathcal{O}(m+n)$ time and $\mathcal{O}(m+n)$ space. Where as if we have to do this in constant space then it will take $\mathcal{O}(mlogm + nlogn)$ time, Here in our parallel algorithm we will have $n$ processors for $n$ elements in first list and $m$ processors for $m$ elements in second list.
 
@@ -288,20 +334,92 @@ Normally merge of two sorted lists takes $\mathcal{O}(m+n)$ time and $\mathcal{O
 
 Clearly we can see that the complexity is $\mathcal{O}(nlogm + mlogn)$. Here is the CUDA kernel code for this algorithm. This algorithm will only work if all elements in both lists are \textbf{distinct}.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{Images/mergeList1.png}
-    \caption{Merge of 2 Sorted Lists CUDA Kernel}
-\end{figure}
+\codebox{\textbf{Device Function for Binary Search}}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{Images/binarySearch.png}
-    \caption{Device Function for Binary Search}
-\end{figure}
+\begin{lstlisting}
+__device__ int binarySearch(int* nums, int target, int N) {
+    int lo = 0;
+    int hi = N-1;
+    int mid;
+    while(lo <= hi) {
+        mid = lo + (hi-lo)/2;
+        if(nums[mid] == target) return mid;
+        else if(nums[mid] < target) lo = mid+1;
+        else hi = mid-1;
 
-\newpage
+    }
+    return lo;
+}
+\end{lstlisting}
+
+\codebox{\textbf{Merge of 2 Sorted Lists CUDA Kernel}}
+
+\begin{lstlisting}
+__global__ void merge2SortedLists1(int* A, int* B, int* C, int N, int M) {
+    int idx = blockDim.x * blockIdx.x + threadIdx.x;
+    if(idx >= N+M) return;
+
+    if(idx < N) {
+        int otherIdx = binarySearch(B,A[idx],M);
+        C[idx+otherIdx] = A[idx];
+        printf("Idx = %d, otherIdx = %d for element %d \n", idx, otherIdx, A[idx]);
+    }
+    else {
+        int otherIdx = binarySearch(A,B[idx-N],N);
+        C[idx-N+otherIdx] = B[idx-N];
+        printf("Idx = %d, otherIdx = %d for element %d \n", idx-N, otherIdx, B[idx-N]);
+    }
+}
+\end{lstlisting}
 
 \subsection*{Enumeration Sort}
+This sorting algorithm takes $\mathcal{O}(n^2)$ comparisons, so we are going to spawn $n^2$ threads for each comparison and hence we can sort in $\mathcal{O}(1)$ time. Here is the algorithm for Enumeration Sort.
+
+\begin{itemize}
+    \item Each thread compares $a[i]$ and $a[j]$. If $a[i] > a[j]$ then $pos[i] = pos[i] + 1$.
+    \item Threads will do concurrent write to $pos[i]$ and we used atomic add operations to put the sum of all increments in $pos[i]$.
+    \item Finally we will have position of each element in sorted array.
+\end{itemize}
+
+\codebox{\textbf{CUDA Kernel Implementation for Enumeration Sort}}
+
+\begin{lstlisting}
+__global__ void EnumerationSort(int* A, int* POS) {
+    int threadID = threadIdx.x;
+    int blockID = blockIdx.x;
+
+    if(A[threadID] > A[blockID]) {
+        atomicAdd(&POS[threadID],1); // Ensures correct parallel addition
+    }
+}
+\end{lstlisting}
+
+\codebox{\textbf{Post Processing Step}}
+This Post processing step is not needed if all the elements are distinct. If there are duplicates then we need to do this step.
+
+\begin{lstlisting}
+    // Initializing answer array to 0.
+    int* answer = (int*)malloc(size);
+    for(int i = 0;i < N; i++) answer[i] = 0;
+
+    // Fill Elements at correct place
+    for(int i = 0;i < N; i++) {
+        int idx = pos[i];
+
+        if(answer[idx] != 0) {  // This is case when duplicate elements are present
+            int k = 1;
+            bool flag = true;
+
+            while(flag) {
+                if(answer[idx+k] == 0) {
+                    answer[idx+k] = answer[idx];
+                    flag = false;
+                }
+                else k++;
+            }
+        }
+        else answer[idx] = A[i];
+    }
+\end{lstlisting}
 
 \end{document}
