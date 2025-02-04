@@ -25,7 +25,7 @@ void matrixVectorMultiplicationCPU(float* A, float* V, float* Answer, int M, int
     for(int i = 0;i < M; i++) {
         Answer[i] = 0;
         for(int j = 0;j < N; j++) {
-            Answer[i] += A[i*M + j] * V[j];
+            Answer[i] += A[i*N + j] * V[j];
         }
     }
 }
@@ -62,8 +62,8 @@ void displayVector(float* V, int N) {
 int main() {
 
     // Change these values to 1024, 1024 to see time difference in Cuda vs CPU
-    int m = 10;
-    int n = 20;
+    int m = 10000;
+    int n = 512;
 
     size_t size_matrix = m*n*sizeof(float), size_vector = n*sizeof(float), size_answer = m*sizeof(float);
 
@@ -78,7 +78,7 @@ int main() {
     // Initialization of Matrix
     for(int i = 0;i < m; i++) {
         for(int j = 0;j < n; j++) {
-            A[i*m + j] = rand() % 10;
+            A[i*n + j] = rand() % 10;
         }
     }
 
@@ -108,7 +108,7 @@ int main() {
     cudaFree(dA); cudaFree(dV); cudaFree(dAnswer);
 
     // Check Output
-    displayVector(Answer,m);
+    // displayVector(Answer,m);
 
     // Invoke CPU Call
     start = getTime();
@@ -119,7 +119,7 @@ int main() {
     duration = duration_cast<nanoseconds> (end - start);
     cout << "Time Taken by CPU Call: " << duration.count() << endl;
 
-    displayVector(Answer,m);
+    // displayVector(Answer,m);
 
     free(A); free(V); free(Answer);
 
