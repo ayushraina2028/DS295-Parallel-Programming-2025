@@ -13,17 +13,13 @@ int main() {
     size_t size = sizeof(int);
 
     // Allocate space on GPU
-    cudaMalloc(&dA,size);
-    cudaMalloc(&dB,size);
-    cudaMalloc(&dC,size);
+    cudaMalloc(&dA,size); cudaMalloc(&dB,size); cudaMalloc(&dC,size);
 
     // Initialize;
-    a = 4;
-    b = 4;
+    a = 4; b = 4;
 
     // Copy
-    cudaMemcpy(dA,&a,size,cudaMemcpyHostToDevice);
-    cudaMemcpy(dB,&b,size,cudaMemcpyHostToDevice);
+    cudaMemcpy(dA,&a,size,cudaMemcpyHostToDevice); cudaMemcpy(dB,&b,size,cudaMemcpyHostToDevice);
 
     // Launch kernel
     addIntegers<<<1,1>>> (dA,dB,dC);
@@ -32,9 +28,7 @@ int main() {
     cudaMemcpy(&c,dC,size,cudaMemcpyDeviceToHost);
 
     // Free memory
-    cudaFree(dA);
-    cudaFree(dB);
-    cudaFree(dC);
+    cudaFree(dA); cudaFree(dB); cudaFree(dC);
 
     cout << "Answer is -> " << c << endl;
     return 0;

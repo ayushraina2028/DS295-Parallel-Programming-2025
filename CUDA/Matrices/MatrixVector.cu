@@ -65,24 +65,15 @@ int main() {
     int m = 10;
     int n = 20;
 
-    size_t size_matrix = m*n*sizeof(float);
-    size_t size_vector = n*sizeof(float);
-    size_t size_answer = m*sizeof(float);
+    size_t size_matrix = m*n*sizeof(float), size_vector = n*sizeof(float), size_answer = m*sizeof(float);
 
     // Allocating Space on CPU
-    float* A = (float*) malloc(size_matrix);
-    float* V = (float*) malloc(size_vector);
-    float* Answer = (float*) malloc(size_answer);
+    float* A = (float*) malloc(size_matrix), *V = (float*) malloc(size_vector), *Answer = (float*) malloc(size_answer);
 
     // Allocating Space on GPU
-    float* dA;
-    cudaMalloc((void**) &dA, size_matrix);
-
-    float* dV;
-    cudaMalloc((void**) &dV,size_vector);
-
-    float* dAnswer;
-    cudaMalloc((void**) &dAnswer,size_answer);
+    float* dA; cudaMalloc((void**) &dA, size_matrix);
+    float* dV; cudaMalloc((void**) &dV,size_vector);
+    float* dAnswer; cudaMalloc((void**) &dAnswer,size_answer);
 
     // Initialization of Matrix
     for(int i = 0;i < m; i++) {
@@ -94,13 +85,8 @@ int main() {
     // Initialization of Vector
     for(int i = 0;i < n; i++) V[i] = rand() % 10;
 
-    // Display
-    // displayMatrix(A,m,n);
-    // displayVector(V,n);
-
     // Copy
-    cudaMemcpy(dA,A,size_matrix,cudaMemcpyHostToDevice);    
-    cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice);
+    cudaMemcpy(dA,A,size_matrix,cudaMemcpyHostToDevice); cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice);
 
     int threadsPerBlock = 128;
     int numBlocks = (m + threadsPerBlock - 1) / threadsPerBlock;
@@ -119,9 +105,7 @@ int main() {
     cudaMemcpy(Answer,dAnswer,size_answer,cudaMemcpyDeviceToHost);
 
     // Free
-    cudaFree(dA);
-    cudaFree(dV);
-    cudaFree(dAnswer);
+    cudaFree(dA); cudaFree(dV); cudaFree(dAnswer);
 
     // Check Output
     displayVector(Answer,m);
@@ -137,9 +121,7 @@ int main() {
 
     displayVector(Answer,m);
 
-    free(A);
-    free(V);
-    free(Answer);
+    free(A); free(V); free(Answer);
 
     return 0;
 }   
