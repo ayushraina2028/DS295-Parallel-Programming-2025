@@ -62,7 +62,7 @@ void displayVector(float* V, int N) {
 int main() {
 
     // Change these values to 1024, 1024 to see time difference in Cuda vs CPU
-    int m = 10000;
+    int m = 10240;
     int n = 512;
 
     size_t size_matrix = m*n*sizeof(float), size_vector = n*sizeof(float), size_answer = m*sizeof(float);

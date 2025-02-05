@@ -832,4 +832,32 @@ int main() {
 }
 \end{lstlisting}
 Do checkout other functions and macros in code available no github.
+
+Now we will discuss a optimised version of matrix vector multiplication using shared memory.
+
+\codebox{\textbf{Example 8: Matrix Vector Multiplication Using Shared Memory}}
+
+\begin{lstlisting}
+__global__ void MatrixVectorMultUsingSharedMemory(int* A, int* V, int* Answer, int N, int M) {
+    
+    __shared__ int sharedMemory[512]; // This needs to be same as block size = cols in matrix
+    int tid = threadIdx.x;
+
+    sharedMemory[tid] = V[tid]; // Load vector V into shared memory
+    __syncthreads();
+
+    int curr_row = blockDim.x * blockIdx.x + tid;
+    int sum = 0;
+
+    for(int curr_col = 0; curr_col < M; curr_col++) {
+        sum += A[curr_row * M + curr_col] * sharedMemory[curr_col];
+    }
+
+    Answer[curr_row] = sum;
+
+}
+\end{lstlisting}
+
+To see time difference we choosed rows = 10240 and cols = 512, then time taken by code dicussed in Example 8 = 0.438 ms and time taken by code discussed in Example 6 = 0.472 ms. 
+
 \end{document}
