@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.1.30)  5 FEB 2025 23:48
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.1.30)  5 FEB 2025 23:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -357,7 +357,7 @@ File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count302
 \l__pdf_internal_box=\box71
-) (./report.aux)
+) (./report.aux (./Lecture1.aux) (./Lecture2.aux) (./Lecture3.aux) (./Lecture4.aux) (./Lecture5.aux) (./Lecture6.aux))
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -432,209 +432,249 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verbatim
 ) [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 92--94
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+\openout2 = `Lecture1.aux'.
+
+ (./Lecture1.tex) [2
+
+{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+\openout2 = `Lecture2.aux'.
+
+ (./Lecture2.tex
+Underfull \hbox (badness 10000) in paragraph at lines 11--13
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 95--96
+Underfull \hbox (badness 10000) in paragraph at lines 14--15
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 97--98
+Underfull \hbox (badness 10000) in paragraph at lines 16--17
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 99--100
+Underfull \hbox (badness 10000) in paragraph at lines 18--19
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 101--102
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--104
+Underfull \hbox (badness 10000) in paragraph at lines 22--23
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--109
-
- []
-
-[2]
-Underfull \hbox (badness 10000) in paragraph at lines 115--123
+Underfull \hbox (badness 10000) in paragraph at lines 24--28
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 125--126
+Underfull \hbox (badness 10000) in paragraph at lines 33--41
 
  []
 
-[3]
-<overheads.png, id=24, 829.0975pt x 577.15625pt>
+[3
+
+
+
+])
+Underfull \hbox (badness 10000) in paragraph at lines 43--47
+
+ []
+
+[4]
+\openout2 = `Lecture3.aux'.
+
+ (./Lecture3.tex
+<overheads.png, id=27, 829.0975pt x 577.15625pt>
 File: overheads.png Graphic file (type png)
 <use overheads.png>
-Package pdftex.def Info: overheads.png  used on input line 134.
+Package pdftex.def Info: overheads.png  used on input line 6.
 (pdftex.def)             Requested size: 262.61894pt x 182.80913pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--140
+Underfull \hbox (badness 10000) in paragraph at lines 11--12
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 141--142
+Underfull \hbox (badness 10000) in paragraph at lines 13--14
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
+Underfull \hbox (badness 10000) in paragraph at lines 15--16
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--146
+Underfull \hbox (badness 10000) in paragraph at lines 17--18
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 147--148
+Underfull \hbox (badness 10000) in paragraph at lines 19--20
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 149--150
+Underfull \hbox (badness 10000) in paragraph at lines 21--22
 
  []
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 151.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 23.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 152.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 24.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 154--155
-
- []
-
-
-LaTeX Font Warning: Command \Large invalid in math mode on input line 160.
-
-[4 <./overheads.png>]
-
-LaTeX Font Warning: Command \Large invalid in math mode on input line 168.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 170--172
+Underfull \hbox (badness 10000) in paragraph at lines 26--27
 
  []
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 176.
+LaTeX Font Warning: Command \Large invalid in math mode on input line 32.
+
+[5
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 178.
+
+ <./overheads.png>]
+
+LaTeX Font Warning: Command \Large invalid in math mode on input line 40.
 
 
-LaTeX Font Warning: Command \Large invalid in math mode on input line 183.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 189--190
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 191--192
+Underfull \hbox (badness 10000) in paragraph at lines 42--44
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 198--199
+LaTeX Font Warning: Command \Large invalid in math mode on input line 48.
+
+
+LaTeX Font Warning: Command \Large invalid in math mode on input line 50.
+
+
+LaTeX Font Warning: Command \Large invalid in math mode on input line 55.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 201--202
+Underfull \hbox (badness 10000) in paragraph at lines 63--64
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 204--205
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
 
  []
 
-[5] [6]
-<Images/PRAM.png, id=38, 1362.08875pt x 530.98375pt>
+)
+Underfull \hbox (badness 10000) in paragraph at lines 73--48
+
+ []
+
+[6]
+\openout2 = `Lecture4.aux'.
+
+ (./Lecture4.tex
+Underfull \hbox (badness 10000) in paragraph at lines 2--3
+
+ []
+
+[7
+
+
+
+]
+<Images/PRAM.png, id=42, 1362.08875pt x 530.98375pt>
 File: Images/PRAM.png Graphic file (type png)
 <use Images/PRAM.png>
-Package pdftex.def Info: Images/PRAM.png  used on input line 240.
+Package pdftex.def Info: Images/PRAM.png  used on input line 38.
 (pdftex.def)             Requested size: 472.71088pt x 184.27527pt.
-<Images/PRAM2.png, id=39, 1333.98375pt x 562.1pt>
+<Images/PRAM2.png, id=43, 1333.98375pt x 562.1pt>
 File: Images/PRAM2.png Graphic file (type png)
 <use Images/PRAM2.png>
-Package pdftex.def Info: Images/PRAM2.png  used on input line 261.
+Package pdftex.def Info: Images/PRAM2.png  used on input line 59.
 (pdftex.def)             Requested size: 472.71088pt x 199.18237pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 272--273
+Underfull \hbox (badness 10000) in paragraph at lines 70--71
 
  []
 
-[7 <./Images/PRAM.png>]
-LaTeX Font Info:    Trying to load font information for OT1+zi4 on input line 287.
+[8 <./Images/PRAM.png>]
+LaTeX Font Info:    Trying to load font information for OT1+zi4 on input line 85.
  (/usr/share/texlive/texmf-dist/tex/latex/inconsolata/ot1zi4.fd
 File: ot1zi4.fd 2018/01/14 OT1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `OT1/zi4/m/n' will be
-(Font)              scaled to size 10.0pt on input line 287.
+(Font)              scaled to size 10.0pt on input line 85.
 LaTeX Font Info:    Font shape `OT1/zi4/m/n' will be
-(Font)              scaled to size 8.0pt on input line 287.
+(Font)              scaled to size 8.0pt on input line 85.
 LaTeX Font Info:    Font shape `OT1/zi4/b/n' will be
-(Font)              scaled to size 8.0pt on input line 288.
- [8{/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-ot1-0.enc} <./Images/PRAM2.png>]
-<Images/prefix2method.png, id=52, 774.895pt x 565.11125pt>
+(Font)              scaled to size 8.0pt on input line 86.
+ [9{/usr/share/texlive/texmf-dist/fonts/enc/dvips/inconsolata/i4-ot1-0.enc} <./Images/PRAM2.png>]
+<Images/prefix2method.png, id=55, 774.895pt x 565.11125pt>
 File: Images/prefix2method.png Graphic file (type png)
 <use Images/prefix2method.png>
-Package pdftex.def Info: Images/prefix2method.png  used on input line 306.
+Package pdftex.def Info: Images/prefix2method.png  used on input line 104.
 (pdftex.def)             Requested size: 315.14594pt x 229.82594pt.
- [9 <./Images/prefix2method.png>]
+ [10 <./Images/prefix2method.png>]
 
 LaTeX Font Warning: Font shape `OT1/zi4/m/it' undefined
-(Font)              using `OT1/zi4/m/n' instead on input line 392.
+(Font)              using `OT1/zi4/m/n' instead on input line 190.
 
 LaTeX Font Info:    Font shape `OT1/zi4/m/it' will be
-(Font)              scaled to size 8.0pt on input line 392.
-[10]
-Underfull \hbox (badness 10000) in paragraph at lines 464--466
+(Font)              scaled to size 8.0pt on input line 190.
+) [11]
+\openout2 = `Lecture5.aux'.
+
+ (./Lecture5.tex
+Underfull \hbox (badness 10000) in paragraph at lines 38--40
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 472--475
+Underfull \hbox (badness 10000) in paragraph at lines 46--49
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 478--482
+Underfull \hbox (badness 10000) in paragraph at lines 52--56
 
  []
 
-[11]
-Underfull \hbox (badness 10000) in paragraph at lines 489--492
+[12
+
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 63--66
 
  []
 
-[12] [13] [14] [15] [16] [17] (./report.aux)
+[13] [14] [15] [16] [17]) [18]
+\openout2 = `Lecture6.aux'.
+
+ (./Lecture6.tex) [19
+
+
+
+] (./report.aux (./Lecture1.aux) (./Lecture2.aux) (./Lecture3.aux) (./Lecture4.aux) (./Lecture5.aux) (./Lecture6.aux))
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -645,18 +685,18 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 15382 strings out of 474222
- 297949 string characters out of 5748733
+ 15532 strings out of 474222
+ 301381 string characters out of 5748733
  2551975 words of memory out of 5000000
- 37399 multiletter control sequences out of 15000+600000
+ 37507 multiletter control sequences out of 15000+600000
  565243 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 83i,6n,97p,761b,1236s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,6n,97p,784b,1236s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4b.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on report.pdf (17 pages, 473001 bytes).
+Output written on report.pdf (19 pages, 473785 bytes).
 PDF statistics:
- 143 PDF objects out of 1000 (max. 8388607)
- 87 compressed objects within 1 object stream
+ 150 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  33 words of extra memory for PDF output out of 10000 (max. 10000000)
 

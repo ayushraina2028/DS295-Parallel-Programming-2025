@@ -1,0 +1,441 @@
+\section*{Lecture 5.1: Many Core Architectures}
+
+\subsection*{Introduction}
+A single CPU can consists of maximum 128 cores whereas GPU consists of large number of light weighted cores. Less computational part of the program runs on CPU and highly parallel part of the program runs on GPU. \\
+NVIDIA's GPU Architecture is called \textbf{CUDA - Compute Unified Device Architecture}.
+
+\subsection*{NVIDIA A100 GPU Architecture} 
+\begin{enumerate}
+    \item CUDA has hierarchical architecture. It consists of 7 Graphical Processing Clusters (GPCs).
+    \item It has 7 or 8 Texture Processing Clusters (TPCs) per GPC. If we assume 8 then we have 56 TPCs in total.
+    \item It has 2 Streaming Multiprocessors (SMs) per TPC. Hence upto 16 SMs/GPC.
+    \item It has 108 SMs in total.
+\end{enumerate}
+
+\subsection*{Streaming Multiprocessors (SMs)}
+\begin{enumerate}
+    \item 64 FP32 Cuda Cores per SM, Hence $64 * 108 = 6912$ FP32 Cuda Cores per GPU.
+    \item 4 third Generation Tensor Cores per SM. Hence $4 * 108 = 432$ Tensor Cores per GPU. These can together deliver 1024 FP16 / FP32 operations per clock.
+    \item 192 KB of combined shared memory and L1 cache per SM which is 1.5x larger than V100.
+\end{enumerate}
+
+\subsection*{Tensor Cores}
+\begin{enumerate}
+    \item Tensor Cores are specialized high-performance compute cores for matrix math operations that provide groundbreaking performance for AI and HPC applications. 
+    \item Tensor Cores perform matrix
+    multiply and accumulate (MMA) calculations. Hundreds of Tensor Cores operating in parallel in one NVIDIA GPU enable massive increases in throughput and efficiency
+\end{enumerate}
+
+\subsection*{Memory Hierarchy}
+\begin{enumerate}
+    \item \textbf{Global or Device Memory (DRAM): }This is largest, slowest and most abundant memory on a GPU and this can be accessed by all threads executing in all the SMs. It has high latency. It can also be accessed by CPU Host. In A100 GPU we have 80 GB of Device Memory.
+    \item \textbf{Shared Memory (On-Chip Memory): }This is available in each SM. This is a small but fast memory that is shared by threads within the same block. It is much faster than global memory because it's physically closer to the cores. In A100 it is around 192 KB per SM. Lower latency as compared to global memory.
+    \item \textbf{Registers: } Each thread has its own registers which is used for storing local data of threads. In A100 there are 64K registers per SM.
+    \item \textbf{Constant and Texture Memory: } Used to improve performance of reads that exhibit spatial locality among threads making it efficient for 2D or 3D image data. It can be accessed by all threads.
+\end{enumerate}
+
+\subsection*{Latency of Data Accesses}
+1. Device Memory: 200-400 clock cycles about 300ns. \\
+2. Shared Memory: 20-30 clock cycles about 5ns. \\
+
+\subsection*{Difference with CPU Threads}
+1. Context switching in GPUs is faster because thread states are kept in registers and shared memory until execution is complete, minimizing delays. \\
+2. Cache management in GPUs is explicit, meaning the programmer needs to handle moving frequently used data into shared memory for faster access, whereas in CPUs, the hardware automatically manages the cache.
+
+\subsection*{Questions}
+1. Is constant and texture memory accessible to threads among any SM ? \\
+2. Algebra of 108 SMs in A100 GPU. \\
+3. What is GA100 and meaning of line A100 GPU implementation of GA100. \\
+
+\section*{Lecture 5.2: CUDA Programming}
+\subsection*{Hierarchical Parallelism}
+1. Parallel Computations are arranged in grids, one grid executes after another. \\
+2. Grid Consists of blocks which are assigned to SMs. Multiple blocks can be assigned to single SM. \\
+3. Maximum thread blocks executed concurrently per SM = 16. Max threads per thread block = 1024. \\
+4. A thread is executed on GPU Core. \\
+
+Question - Check about concurrent block execution in SM vs warps. 
+
+\subsection*{Thread Block}
+An array of concurrent threads that execute the same code and can cooperate to compute the result. It can be 1D, 2D or 3D. Threads of a thread block share memory.
+
+\subsection*{CUDA Programming Model}
+1. A kernel is executed by a grid of thread blocks. \\
+2. Threads in a thread block can cooperate with each other by sharing their data through shared memory, synchronizing their execution. \\
+3. Threads from different blocks cannot cooperate. \\
+
+\codebox{\textbf{Example1: Add Two Integers using CUDA Kernel}}
+\begin{lstlisting}
+__global__ void addIntegers(int* a, int* b, int* c) {
+    *c = *a + *b;
+}
+\end{lstlisting}
+
+Here is the implementation of main function.  
+\begin{lstlisting}
+int main() {
+    
+    int a, b, c;
+    int *dA, *dB, *dC;
+
+    size_t size = sizeof(int);
+
+    // Allocate space on GPU
+    cudaMalloc(&dA,size); cudaMalloc(&dB,size); cudaMalloc(&dC,size);
+
+    // Initialize;
+    a = 4; b = 4;
+
+    // Copy
+    cudaMemcpy(dA,&a,size,cudaMemcpyHostToDevice); cudaMemcpy(dB,&b,size,cudaMemcpyHostToDevice);
+
+    // Launch kernel
+    addIntegers<<<1,1>>> (dA,dB,dC);
+
+    // Copy back to CPU
+    cudaMemcpy(&c,dC,size,cudaMemcpyDeviceToHost);
+
+    // Free memory
+    cudaFree(dA); cudaFree(dB); cudaFree(dC);
+
+    cout << "Answer is -> " << c << endl;
+    return 0;
+}
+\end{lstlisting}
+
+\newpage
+
+\codebox{\textbf{Example 2: Vector Addition 1}}
+\begin{lstlisting}
+__global__ void VectorAdditionUsingParallelBlocks(int* A, int* B, int* C) {
+    /* N Threads Blocks with 1 Thread Per Block */
+    int i = blockIdx.x;
+    C[i] = A[i] + B[i];
+}
+
+int main() {
+    int threadsPerBlock = 1;
+    int numBlocks = N;
+
+    // Invoke the kernel
+    VectorAdditionUsingParallelBlocks<<<numBlocks, threadsPerBlock>>> (dA,dB,dC);
+}
+\end{lstlisting}
+
+\codebox{\textbf{Example 3: Vector Addition 2}}
+\begin{lstlisting}
+__global__ void VectorAdditionUsingParallelThreads(int* A, int* B, int* C) {
+    /* 1 Thread Block and N Threads in that Block */
+    int i = threadIdx.x;
+    C[i] = A[i] + B[i];
+}
+
+int main() {
+    int threadsPerBlock = N;
+    int numBlocks = 1;
+
+    VectorAdditionUsingParallelThreads<<<numBlocks,threadsPerBlock>>> (dA,dB,dC);
+}
+\end{lstlisting}
+
+\codebox{\textbf{Example 4: Vector Addition 3}}
+
+\begin{lstlisting}
+__global__ void VectorAdditionUsingBlocksAndThreads(float* A, float* B, float* C, int N) {
+    // Using both Blocks and Threads
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    
+    // This is because every block has same number of threads and it is possible that some threads need not to do anything
+    if(i < N) {
+        C[i] = A[i] + B[i];
+    }
+
+    return;
+}
+
+int main() {
+    // Kernel Parameters
+    int threadsPerBlock = 512;
+    int blocksPerGrid = (int)ceil((float)(N/(threadsPerBlock*1.0))); // This can also be achieved using (N + M - 1)/M;
+
+    // Invoke kernel, it has to void return type
+    VectorAdditionUsingBlocksAndThreads<<<blocksPerGrid,threadsPerBlock>>> (dA,dB,dC,N);
+    cudaDeviceSynchronize(); 
+}
+\end{lstlisting}
+
+\codebox{\textbf{Example 5: Vector Addition 4}}
+
+\begin{lstlisting}
+__global__ void VectorAdditionUsing3DBlocks(int* A, int* B, int* Answer, int nX, int nY, int nZ) {
+    
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int z = blockIdx.z * blockDim.z + threadIdx.z;
+
+    if(x < nX and y < nY and z < nZ) {
+        int index = x + y*nX + z*nX*nY;
+        if(index < nX * nY * nZ) {
+            Answer[index] = A[index] + B[index];
+        }
+    }
+
+}
+\end{lstlisting}
+
+Here is main function for this kernel.
+
+\begin{lstlisting}
+int main() {
+    int N = 1000000; // 10^6
+    size_t size = N * sizeof(int);
+
+    int *A = (int*) malloc(size), *B = (int*) malloc(size), *C = (int*) malloc(size);
+
+    for(int i = 0;i < N; i++) {
+        A[i] = rand() % 15; B[i] = rand() % 20;
+    }
+
+    int *dA, *dB, *dC;
+    cudaMalloc(&dA,size); cudaMalloc(&dB, size); cudaMalloc(&dC, size);
+
+    cudaMemcpy(dA,A,size,cudaMemcpyHostToDevice); cudaMemcpy(dB,B,size,cudaMemcpyHostToDevice);
+
+    dim3 blockSize(16,8,8);
+
+    int numBlocksInX = (100 + 16 - 1) / 16, numBlocksinY = (100 + 8 - 1) / 8, numBlocksInZ = (100 + 8 - 1) / 8;
+    dim3 numBlocks(numBlocksInX,numBlocksinY,numBlocksInZ);
+
+    // Kernel with 3D Blocks
+    auto s = getTime();
+    VectorAdditionUsing3DBlocks<<<numBlocks,blockSize>>> (dA,dB,dC,100,100,100);
+    cudaDeviceSynchronize();
+    auto e = getTime();
+
+    nanoseconds duration = duration_cast<nanoseconds> (e - s);
+    cout << "Time taken to do Vector Addition using 3D block is: " << duration.count() << endl;
+
+    // Kernel with 1D Blocks
+    s = getTime();
+    VectorAdditionUsing1DBlock<<<(N + 128 - 1) / 128,128>>>(dA,dB,dC,N);
+    cudaDeviceSynchronize();
+    e = getTime();
+
+    duration = duration_cast<nanoseconds>(e - s);
+    cout << "Time Taken to do Vector Addition using 1D Blocks is: " << duration.count() << endl;
+
+    cudaMemcpy(C,dC,size,cudaMemcpyDeviceToHost);
+    cudaFree(dA); cudaFree(dB); cudaFree(dC);
+
+    free(A); free(B); free(C);
+    return 0;
+    
+}
+\end{lstlisting}
+
+\codebox{\textbf{Example 6: Matrix Vector Multiplication}}
+
+\begin{lstlisting}
+    // GPU Kernel
+__global__ void matrixVectorMult(float* A, float* V,float* Answer, int M, int N) {
+    
+    int curr_row, curr_col;
+    float sum = 0;
+    curr_row = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if(curr_row < M) {
+
+        for(curr_col = 0; curr_col < N; curr_col++) {
+            sum += A[N*curr_row + curr_col]*V[curr_col];
+        }
+        Answer[curr_row] = sum;
+
+    }
+}
+
+\end{lstlisting}
+
+main() function is discussed in next page.
+
+\newpage
+
+\begin{lstlisting}
+int main() {
+
+    // Change these values to 1024, 1024 to see time difference in Cuda vs CPU
+    int m = 10;
+    int n = 20;
+
+    size_t size_matrix = m*n*sizeof(float), size_vector = n*sizeof(float), size_answer = m*sizeof(float);
+
+    // Allocating Space on CPU
+    float* A = (float*) malloc(size_matrix), *V = (float*) malloc(size_vector), *Answer = (float*) malloc(size_answer);
+
+    // Allocating Space on GPU
+    float* dA; cudaMalloc((void**) &dA, size_matrix);
+    float* dV; cudaMalloc((void**) &dV,size_vector);
+    float* dAnswer; cudaMalloc((void**) &dAnswer,size_answer);
+
+    // Initialization of Matrix
+    for(int i = 0;i < m; i++) {
+        for(int j = 0;j < n; j++) {
+            A[i*m + j] = rand() % 10;
+        }
+    }
+
+    // Initialization of Vector
+    for(int i = 0;i < n; i++) V[i] = rand() % 10;
+
+    // Copy
+    cudaMemcpy(dA,A,size_matrix,cudaMemcpyHostToDevice); cudaMemcpy(dV,V,size_vector,cudaMemcpyHostToDevice);
+
+    int threadsPerBlock = 128;
+    int numBlocks = (m + threadsPerBlock - 1) / threadsPerBlock;
+    
+    // Invoking kernel;
+    auto start = getTime();
+    matrixVectorMult<<<numBlocks, threadsPerBlock>>> (dA,dV,dAnswer,m,n);
+    cudaDeviceSynchronize(); // Wait until CUDA kernel finishes completely.
+    auto end = getTime();
+
+    // Time Taken By CUDA
+    nanoseconds duration = duration_cast<nanoseconds>(end-start);
+    cout << "Time Taken by GPU Kernel: " << duration.count() << endl;
+
+    // Copy Result Back
+    cudaMemcpy(Answer,dAnswer,size_answer,cudaMemcpyDeviceToHost);
+
+    // Free
+    cudaFree(dA); cudaFree(dV); cudaFree(dAnswer);
+
+    // Check Output
+    displayVector(Answer,m);
+
+    // Invoke CPU Call
+    start = getTime();
+    matrixVectorMultiplicationCPU(A,V,Answer,m,n);
+    end = getTime();
+
+    // Time Taken by CPU
+    duration = duration_cast<nanoseconds> (end - start);
+    cout << "Time Taken by CPU Call: " << duration.count() << endl;
+
+    displayVector(Answer,m);
+
+    free(A); free(V); free(Answer);
+
+    return 0;
+}   
+
+\end{lstlisting}
+
+\newpage
+
+\codebox{\textbf{Example 7: Matrix Matrix Multiplication}}
+
+\begin{lstlisting}
+    // naive version of matrix multiplication on CUDA, we will implement optimized version soon
+__global__ void MatrixMult(int* A, int* B, int* C, int N, int K, int M) {
+    int curr_row = blockIdx.y * blockDim.y + threadIdx.y;
+    int curr_col = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int sum = 0;
+    if(curr_row < N and curr_col < M) {
+        for(int i = 0;i < K; i++) {
+            sum += A[curr_row * K + i] * B[i * M + curr_col];
+        }
+        C[curr_row * M + curr_col] = sum;
+    }
+}
+
+int main() {
+    int N = 1024;
+    int K = 1024;
+    int M = 1024;
+
+    size_t sizeA = N*K*sizeof(int);
+    size_t sizeB = K*M*sizeof(int);
+    size_t sizeC = N*M*sizeof(int);
+
+    int *A = (int*)malloc(sizeA), *B = (int*)malloc(sizeB), *C = (int*)malloc(sizeC);
+
+    fill(A,N*K);
+    fill(B,K*M);
+
+    int *dA, *dB, *dC;
+    CUDA_CHECK_ERROR(cudaMalloc((void**)&dA,sizeA)); CUDA_CHECK_ERROR(cudaMalloc((void**)&dB,sizeB)); CUDA_CHECK_ERROR(cudaMalloc((void**)&dC,sizeC));
+    CUDA_CHECK_ERROR(cudaMemcpy(dA,A,sizeA,cudaMemcpyHostToDevice)); CUDA_CHECK_ERROR(cudaMemcpy(dB,B,sizeB,cudaMemcpyHostToDevice));
+
+    // Invoking the kernel
+    dim3 threadsPerBlock(2,2,1);
+
+    int blocksInX = (M + threadsPerBlock.x - 1) / threadsPerBlock.x;
+    int blocksInY = (N + threadsPerBlock.y - 1) / threadsPerBlock.y;
+    dim3 gridSize(blocksInX,blocksInY,1);
+
+    auto s = getTime(); 
+    MatrixMult<<<gridSize,threadsPerBlock>>> (dA,dB,dC,N,K,M); CUDA_CHECK_ERROR(cudaDeviceSynchronize());
+    auto e = getTime();
+    
+
+    nanoseconds durationGPU = duration_cast<nanoseconds> (e - s);
+    cout << "Time taken for CUDA Kernel: " << durationGPU.count() << endl;
+
+    CUDA_CHECK_ERROR(cudaMemcpy(C,dC,sizeC,cudaMemcpyDeviceToHost));
+    CUDA_CHECK_ERROR(cudaFree(dA)); CUDA_CHECK_ERROR(cudaFree(dB)); CUDA_CHECK_ERROR(cudaFree(dC));
+
+    int* C_CPU = (int*)malloc(sizeC);
+
+    s = getTime();
+    MatrixMultOnCPU(A,B,C_CPU,N,K,M);
+    e = getTime();
+
+    nanoseconds durationCPU = duration_cast<nanoseconds> (e - s);
+    cout << "Time taken for CPU: " << durationCPU.count() << endl;
+
+    // cout << "Matrix A: " << endl; display(A,N,K);
+    // cout << "Matrix B: " << endl; display(B,K,M);
+    
+    // cout << "Matrix C from GPU: " << endl; display(C,N,M);
+    // cout << "Matrix C from CPU: " << endl; display(C_CPU,N,M);
+
+    cout << "SpeedUP: " << (float) (durationCPU.count()) / (durationGPU.count() * 1.0) << endl; // Around 47 times faster
+
+    free(A); free(B); free(C);
+    return 0;
+}
+\end{lstlisting}
+Do checkout other functions and macros in code available no github.
+
+Now we will discuss a optimised version of matrix vector multiplication using shared memory.
+
+\codebox{\textbf{Example 8: Matrix Vector Multiplication Using Shared Memory}}
+
+\begin{lstlisting}
+__global__ void MatrixVectorMultUsingSharedMemory(int* A, int* V, int* Answer, int N, int M) {
+    
+    __shared__ int sharedMemory[512]; // This needs to be same as block size = cols in matrix
+    int tid = threadIdx.x;
+
+    sharedMemory[tid] = V[tid]; // Load vector V into shared memory
+    __syncthreads();
+
+    int curr_row = blockDim.x * blockIdx.x + tid;
+    int sum = 0;
+
+    for(int curr_col = 0; curr_col < M; curr_col++) {
+        sum += A[curr_row * M + curr_col] * sharedMemory[curr_col];
+    }
+
+    Answer[curr_row] = sum;
+
+}
+\end{lstlisting}
+
+To see time difference we choosed rows = 10240 and cols = 512, then time taken by code dicussed in Example 8 = 0.438 ms and time taken by code discussed in Example 6 = 0.472 ms. 
+
+\subsection*{Reduction}
+To be added.
+
+\section*{CUDA Optimizations}
+To be added.

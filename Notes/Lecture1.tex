@@ -1,0 +1,34 @@
+\section*{Lecture 1: Architectures 1}
+\subsection*{Classification of Architectures - Flynns Classification}
+\begin{itemize}
+    \item SISD: Single Instruction Single Data, for example, serial computers.
+    \item SIMD: Single Instruction Multiple Data, for example, vector processors and processor arrays.
+    \item MISD: Multiple Instruction Single Data, for example, trying different ways to decrypt a message.
+    \item MIMD: Multiple Instruction Multiple Data, for example, multi-core processors.
+\end{itemize}
+
+\subsection*{Classification based on Memory}
+\begin{itemize}
+    \item \textbf{Shared Memory:} All processors share a common memory. Communication is done using this shared address space. This is further classified into UMA (Uniform Memory Access) and NUMA (Non-Uniform Memory Access).
+    \begin{itemize}
+        \item UMA: All processors have equal access time to all memory locations. Memory access is slow and has limited bandwidth. UMA has single memory controller.
+        \item NUMA: Processors have variable access to memory locations. Memory access is faster and has higher bandwidth than UMA. NUMA has multiple memory controllers.
+    \end{itemize}
+    \item \textbf{Distributed Memory:} Each processor has its own memory. 
+\end{itemize}
+
+Shared memory could itself be distributed among processor nodes. Each processor might have some portion of the memory that is physically close to it and therefore accessible in less time.
+
+\subsection*{Cache Coherence Problem}
+If each processor in a shared memory multiprocessor machine has a data cache, then the problem of cache coherence arises. Our objective is that processes should not read \textcolor{blue}{\textbf{stale}} data.
+
+\subsection*{Cache Coherence Protocols}
+\begin{itemize}
+    \item \textbf{Write Invalidate:} When a processor writes to its cache, it sends invalidate signal to all other caches that have a copy of that memory location. This means all other cache locations must discard their copy of the memory location and fetch it again from the main memory if needed.
+    \item \textbf{Write Update:} When a processor writes to its cache, it sends the updated data to other caches that have a copy of that memory location. This keeps all caches up to date.
+\end{itemize}
+
+\subsection*{False Sharing}
+If two processors access different variables that are located within same cache line but are not related to each other. In this case any write to one variable will cause cache line to be invalidated and other processor might have to reload the data from main memory. This is called false sharing.
+
+In next lecture we will discuss about interconnecting networks.
