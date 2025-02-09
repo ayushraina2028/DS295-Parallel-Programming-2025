@@ -35,8 +35,8 @@ __global__ void merge2SortedLists1(int* A, int* B, int* C, int N, int M) {
 }
 
 int main() {
-    int N = 6;  
-    int M = 6;
+    int N = 1;  
+    int M = 1;
     size_t sizeA = N*sizeof(int);
     size_t sizeB = M*sizeof(int);
 

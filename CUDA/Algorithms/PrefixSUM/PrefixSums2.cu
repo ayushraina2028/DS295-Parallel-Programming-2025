@@ -28,8 +28,8 @@ int main() {
 
     // Initialize both to same data
     for(int i = 0;i < N; i++) {
-        A[i] = i;
-        PreSUM[i] = i;
+        A[i] = 1;
+        PreSUM[i] = 1;
     }
 
     // CUDA Allocation + Copy
