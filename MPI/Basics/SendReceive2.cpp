@@ -13,7 +13,6 @@ int main(int argc, char** argv) {
     vector<int> nums(10,1);
 
     if(rank == 0) {
-        cout << "Process: " << rank << " will process elements from: 0 -> 4" << endl;
         for(int i = 0;i <= 4; i++) nums[i]++;
 
         MPI_Send(&nums[5],5,MPI_INT,1,0,comm); /* Send Half of the Elements */
