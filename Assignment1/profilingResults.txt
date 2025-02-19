@@ -1,0 +1,12 @@
+Time taken for sorting: 1575 milliseconds
+Array is sorted!
+Time taken for sorting: 1532 milliseconds
+Array is sorted!
+Time taken for sorting: 1540 milliseconds
+Array is sorted!
+Time taken for sorting: 1542 milliseconds
+Array is sorted!
+Time taken for sorting: 1541 milliseconds
+Array is sorted!
+Average time taken for sorting: 1546 milliseconds
+Speedup: 2.80013
