@@ -1,0 +1,158 @@
+\documentclass{article}
+\usepackage{listings} % For code formatting
+\usepackage[utf8]{inputenc}  % For encoding support
+\usepackage{amsmath}   
+\usepackage{amssymb}      % For mathematical formatting
+\usepackage{graphicx}        % For including images
+\usepackage{xcolor}
+\usepackage[a4paper, left=0.5in, right=0.5in, top=0.5in, bottom=0.5in]{geometry}  % Adjust margins here
+\usepackage{tcolorbox}
+\usepackage{inconsolata}  % Use Inconsolata font (or replace with your choice)
+\usepackage{palatino}
+
+% Define colors
+\definecolor{codebg}{RGB}{240, 240, 240}  % Light gray background
+\definecolor{framecolor}{RGB}{100, 100, 100}  % Dark gray frame
+\definecolor{titlebg}{RGB}{30, 30, 30}  % Dark title background
+\definecolor{titlefg}{RGB}{255, 255, 255}  % White title text
+
+% Custom lstset
+\lstset{
+    language=C++,                    
+    basicstyle=\ttfamily\footnotesize\fontfamily{zi4}\selectfont, % Use Inconsolata
+    keywordstyle=\bfseries\color{blue},        
+    commentstyle=\itshape\color{gray},        
+    stringstyle=\color{red},          
+    numbers=left,                     
+    numberstyle=\tiny\color{blue},    
+    frame=single,                     
+    breaklines=true,                   
+    captionpos=b,                      
+    backgroundcolor=\color{codebg},  % Light gray background
+    rulecolor=\color{framecolor},    % Dark frame
+    tabsize=4                         
+}
+
+% Custom command to add a styled heading
+\newtcbox{\codebox}{colback=titlebg, colframe=titlebg, colupper=titlefg, 
+  boxrule=0pt, arc=5pt, left=5pt, right=5pt, top=3pt, bottom=3pt}
+
+\title{Project Proposal for DS295 - Parallel Programming \\ Parallelizing the Expectation Maximization Algorithm for Gaussian Mixture Models}
+\author{Ayush Raina}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction and Motivation}
+The Expectation-Maximization (EM) algorithm is widely used for training Gaussian Mixture Models (GMMs) in clustering, density estimation, and anomaly detection. However, its iterative nature and high computational cost make it inefficient for large datasets on traditional CPUs.
+
+Since key operations in EM, such as computing responsibilities in the E-step and updating parameters in the M-step, can be parallelized, GPU acceleration using CUDA offers a promising solution. By leveraging thousands of GPU cores, we can significantly reduce execution time and scale GMM training to larger datasets.
+
+This project proposes a CUDA-based parallel implementation of EM for GMMs. We will explore optimization strategies, memory access patterns, and benchmark performance improvements over CPU implementations to highlight the benefits of GPU acceleration.
+
+
+\section{Related Work}
+The Expectation-Maximization (EM) algorithm for Gaussian Mixture Models (GMMs) has been extensively studied due to its applications in clustering, density estimation, and pattern recognition. Several works have proposed optimizations to improve its efficiency.
+
+Parallel implementations of EM have been explored using multi-core CPUs and distributed computing frameworks. For example, OpenMP-based parallelization has been used to accelerate the E-step and M-step, reducing runtime on shared-memory architectures. Additionally, GPU implementations leveraging CUDA have demonstrated significant speedups by parallelizing matrix operations and probability computations.
+
+Despite these advancements, optimizing memory access patterns, efficient workload distribution, and minimizing synchronization overhead remain open challenges. This project builds upon existing GPU-based approaches and aims to further improve performance through optimized CUDA kernels and memory management techniques.
+
+\section{Proposed Methodology}
+Our approach focuses on accelerating the Expectation-Maximization (EM) algorithm for Gaussian Mixture Models (GMMs) using CUDA for GPU-based parallelization. The primary objective is to efficiently compute the E-step and M-step by leveraging parallelism, particularly through data parallelism and optimized summation using shared memory parallelism.
+
+\subsection{Expectation Step (E-Step) Parallelization}
+In the E-step, we compute the posterior probability (responsibility) of each data point belonging to a Gaussian component:
+\begin{equation}
+    r_{ik} = \frac{\pi_k \mathcal{N}(x_i | \mu_k, \Sigma_k)}{\sum_{j=1}^{K} \pi_j \mathcal{N}(x_i | \mu_j, \Sigma_j)}
+\end{equation}
+where \( r_{ik} \) is the responsibility of component \( k \) for data point \( x_i \), \( \pi_k \) is the mixture weight, and \( \mathcal{N}(x_i | \mu_k, \Sigma_k) \) is the Gaussian probability density function.
+
+To parallelize this step, we assign each data point to a GPU thread, enabling concurrent computation of Gaussian densities and responsibilities. This ensures efficient execution, especially for large datasets.
+
+\subsection{Maximization Step (M-Step) Parallelization}
+
+In the M-step, we update the parameters of each Gaussian component based on the computed responsibilities:
+
+\begin{align}
+    N_k &= \sum_{i=1}^{N} r_{ik}, \quad \text{(effective number of points assigned to component } k\text{)} \\
+    \pi_k &= \frac{N_k}{N}, \quad \text{(updated mixture weight for component } k\text{)} \\
+    \mu_k &= \frac{1}{N_k} \sum_{i=1}^{N} r_{ik} x_i, \quad \text{(updated mean for component } k\text{)} \\
+    \Sigma_k &= \frac{1}{N_k} \sum_{i=1}^{N} r_{ik} (x_i - \mu_k)(x_i - \mu_k)^T, \quad \text{(updated covariance matrix for component } k\text{)}
+\end{align}
+where:
+\begin{itemize}
+    \item \( N \) is the total number of data points.
+    \item \( K \) is the total number of Gaussian components.
+    \item \( x_i \in \mathbb{R}^d \) represents the \( i \)-th data point in \( d \)-dimensional space.
+    \item \( r_{ik} \) is the responsibility of component \( k \) for data point \( x_i \), i.e., the probability that \( x_i \) was generated by Gaussian \( k \).
+    \item \( N_k \) represents the effective number of data points assigned to component \( k \).
+    \item \( \pi_k \) is the updated mixture weight for component \( k \).
+    \item \( \mu_k \in \mathbb{R}^d \) is the updated mean of component \( k \).
+    \item \( \Sigma_k \in \mathbb{R}^{d \times d} \) is the updated covariance matrix of component \( k \).
+\end{itemize}
+
+To efficiently compute summations like \( N_k \), \( \mu_k \), and \( \Sigma_k \), we will use \textbf{shared memory parallelism} to accelerate reduction operations:
+\begin{itemize}
+    \item Each CUDA block loads a subset of data into \textbf{shared memory}, allowing fast local summation.
+    \item Within each block, \textbf{parallel reduction} is performed in shared memory to compute partial sums.
+    \item A final global sum is computed by aggregating the partial results from all blocks.
+\end{itemize}
+
+Using shared memory ensures \textbf{low-latency} summations and reduces \textbf{global memory accesses}, leading to a significant speedup in the M-step.
+
+
+\subsection{Memory Optimization and Kernel Design}
+Efficient memory access patterns are crucial for high performance. We employ:
+\begin{itemize}
+    \item \textbf{Shared Memory:} Reduces global memory access latency during summation.
+    \item \textbf{Coalesced Access:} Ensures memory reads and writes are aligned for optimal throughput.
+    \item \textbf{Efficient Kernel Launch Configurations:} Choosing appropriate thread and block configurations to balance computational load.
+\end{itemize}
+
+\subsection{Comparison with CPU Implementation}
+To assess the benefits of GPU acceleration, we implement a baseline CPU version of the EM algorithm. We compare:
+\begin{itemize}
+    \item Execution time for different dataset sizes.
+    \item Speedup achieved with CUDA parallelization.
+    \item Numerical stability and convergence behavior.
+\end{itemize}
+
+This methodology ensures efficient parallel execution while maintaining numerical stability and accuracy. The optimized implementation will be tested on large datasets to measure its scalability and real-world applicability.
+
+\section{Experimental Plan}
+To validate our approach, we will follow a structured plan:
+
+\subsection{Implementation Plan}
+\begin{itemize}
+    \item Develop a baseline sequential implementation of EM for GMM.
+    \item Implement CUDA-based parallelization for the E-step using parallel reduction.
+    \item Optimize the M-step using shared memory for efficient parameter updates.
+\end{itemize}
+
+\subsection{Datasets and Evaluation}
+\begin{itemize}
+    \item We will test our implementation on synthetic datasets and real-world benchmark datasets.
+    \item Metrics for evaluation will include execution time, speedup factor, and convergence behavior.
+\end{itemize}
+
+\section{Conclusion and Expected Outcomes}
+This project aims to accelerate the Expectation-Maximization algorithm for Gaussian Mixture Models using CUDA. By leveraging parallel reduction in the E-step and shared memory parallelism in the M-step, we expect significant speedup over CPU-based implementations. 
+
+We anticipate the following outcomes:
+\begin{itemize}
+    \item Faster execution times compared to sequential implementations, especially for large datasets.
+    \item Efficient memory utilization and optimized parallel computations using CUDA.
+\end{itemize}
+
+\section{References}
+
+1. N. S. L. P. Kumar, S. Satoor and I. Buck, "Fast Parallel Expectation Maximization for Gaussian Mixture Models on GPUs Using CUDA," 2009 11th IEEE International Conference on High Performance Computing and Communications, Seoul, Korea (South), 2009, pp. 103-109, doi: 10.1109/HPCC.2009.45. \\
+2. Azizi, Ilia. 2023. “Parallelizing Expectation Maximization (EM).” 
+
+
+
+
+\end{document}
