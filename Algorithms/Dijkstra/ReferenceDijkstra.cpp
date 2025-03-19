@@ -1,9 +1,7 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <limits>
+#include <bits/stdc++.h>
 
 using namespace std;
+using namespace chrono;
 
 // Structure to represent edges in the graph
 struct Edge {
@@ -60,78 +58,111 @@ public:
     vector<int> shortestPath(int source) {
         int V = graph.getV();
         vector<int> dist(V, numeric_limits<int>::max());
-        vector<bool> visited(V, false);
-        
-        // Priority queue to store vertices that need to be processed
-        // pair<vertex, distance>
+    
+        // Min-heap priority queue
         priority_queue<pair<int, int>, vector<pair<int, int>>, CompareDistance> pq;
-        
-        // Initialize source distance as 0
+    
+        // Initialize source distance
         dist[source] = 0;
-        pq.push(make_pair(source, 0));
-        
+        pq.push({source, 0});
+    
         while (!pq.empty()) {
-            // Extract vertex with minimum distance
             int u = pq.top().first;
+            int d = pq.top().second;
             pq.pop();
-            
-            // If already processed, skip
-            if (visited[u]) {
-                continue;
-            }
-            
-            // Mark vertex as processed
-            visited[u] = true;
-            
-            // Process all adjacent vertices
-            const auto& adjList = graph.getAdjList();
-            for (const Edge& edge : adjList[u]) {
+    
+            // Ignore outdated distances
+            if (d > dist[u]) continue;
+    
+            // Relax edges
+            for (const Edge& edge : graph.getAdjList()[u]) {
                 int v = edge.target;
                 int weight = edge.weight;
-                
-                // If there is a shorter path to v through u
-                if (!visited[v] && dist[u] != numeric_limits<int>::max() && 
-                    dist[u] + weight < dist[v]) {
-                    // Update distance of v
+    
+                if (dist[u] + weight < dist[v]) {
                     dist[v] = dist[u] + weight;
-                    pq.push(make_pair(v, dist[v]));
+                    pq.push({v, dist[v]});
                 }
             }
         }
-        
         return dist;
     }
+    
 };
 
-// Example usage with the same graph as Delta-Stepping
+high_resolution_clock::time_point getTime() {
+    return high_resolution_clock::now();
+}
+
 int main() {
-    // Create a graph with 6 vertices
-    Graph g(6);
-    
-    // Add edges (same as in Delta-Stepping example)
-    g.addEdge(0, 1, 2);
-    g.addEdge(0, 2, 4);
-    g.addEdge(1, 2, 1);
-    g.addEdge(1, 3, 7);
-    g.addEdge(2, 4, 3);
-    g.addEdge(3, 5, 1);
-    g.addEdge(4, 3, 2);
-    g.addEdge(4, 5, 5);
-    
-    // Run Dijkstra's algorithm
-    Dijkstra dijkstra(g);
-    vector<int> shortestDistances = dijkstra.shortestPath(0);
-    
-    // Print results
-    cout << "Shortest distances from source vertex 0 (Dijkstra's Algorithm):\n";
-    for (int i = 0; i < shortestDistances.size(); i++) {
-        cout << "To " << i << ": ";
-        if (shortestDistances[i] == numeric_limits<int>::max())
-            cout << "INF";
-        else
-            cout << shortestDistances[i];
-        cout << endl;
+    ifstream inFile("graph.txt");
+    if (!inFile) {
+        cerr << "Error opening input file!\n";
+        return 1;
+    }
+
+    int maxVertex = 0;
+    int u, v, w;
+
+    // Determine the number of vertices dynamically
+    while (inFile >> u >> v >> w) {
+        maxVertex = max(maxVertex, max(u, v));
     }
     
+    cout << "Number of vertices: " << maxVertex + 1 << endl;
+
+    // Reset file pointer to read edges again
+    inFile.clear();
+    inFile.seekg(0, ios::beg);
+
+    // Create graph with correct size
+    Graph g(maxVertex + 1);
+    cout << "Graph created\n";
+    cout << "Adding edges...\n";
+
+    // Read edges and directly add them to the graph
+    while (inFile >> u >> v >> w) {
+        g.addEdge(u, v, w);
+    }
+
+    inFile.close();
+    cout << "Edges added\n";
+
+    // Run Dijkstra's algorithm from source 0
+
+    high_resolution_clock::time_point t1 = getTime();
+
+    cout << "Running Dijkstra's algorithm...\n";
+    Dijkstra dijkstra(g);
+    vector<int> shortestDistances = dijkstra.shortestPath(0);
+    cout << "Dijkstra's algorithm completed\n";
+
+    high_resolution_clock::time_point t2 = getTime();
+    auto duration = duration_cast<milliseconds>(t2 - t1).count();
+    cout << "Time taken: " << duration << " milliseconds\n";
+    
+    // Write results to file
+
+    cout << "Writing results to file...\n";
+    ofstream outFile("dijkstra_output.txt");
+    if (!outFile) {
+        cerr << "Error opening output file!\n";
+        return 1;
+    }
+
+    outFile << "Shortest distances from source vertex 0 (Dijkstra's Algorithm):\n";
+    for (int i = 0; i < shortestDistances.size(); i++) {
+        outFile << "To " << i << ": ";
+        if (shortestDistances[i] == numeric_limits<int>::max())
+            outFile << "INF";
+        else
+            outFile << shortestDistances[i];
+        outFile << endl;
+    }
+
+    outFile.close();
+
+    cout << "Results written to file\n";
     return 0;
 }
+

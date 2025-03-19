@@ -2,6 +2,7 @@
 MPI/Basics/build
 LatexNotes/*
 !LatexNotes/report.pdf
-
+Algorithms/Dijkstra/*.txt
+Algorithms/DeltaStepping/*.txt
 
 

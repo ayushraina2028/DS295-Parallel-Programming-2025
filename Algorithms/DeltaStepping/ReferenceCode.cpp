@@ -30,6 +30,7 @@ public:
     // Function to add an edge to the graph
     void addEdge(int src, int dest, int weight) {
         adj[src].push_back(Edge(dest, weight));
+        adj[dest].push_back(Edge(src, weight));
     }
     
     // Get the adjacency list
@@ -187,7 +188,7 @@ int main() {
     
     // Run Delta-Stepping algorithm
     DeltaStepping ds(g, delta);
-    vector<int> shortestDistances = ds.shortestPath(0);
+    vector<int> shortestDistances = ds.shortestPath(1);
     
     // Print results
     cout << "Shortest distances from source vertex 0:\n";
