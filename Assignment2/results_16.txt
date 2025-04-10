@@ -1,0 +1,40 @@
+Execution with 16 processors
+ Process 0: 3.52637 seconds
+ Process 1: 3.56713 seconds
+ Process 2: 2.91303 seconds
+ Process 3: 2.92764 seconds
+ Process 4: 2.90989 seconds
+ Process 5: 3.56748 seconds
+ Process 6: 2.91705 seconds
+ Process 7: 3.56692 seconds
+ Process 8: 2.89812 seconds
+ Process 9: 3.56665 seconds
+ Process 10: 3.56683 seconds
+ Process 11: 2.91937 seconds
+ Process 12: 3.5672 seconds
+ Process 13: 2.92019 seconds
+ Process 14: 3.55697 seconds
+ Process 15: 2.92353 seconds
+Maximum Time: 3.56748 seconds
+Average Time Per Process: 3.2384 seconds
+--------------------------------------------
+Execution with 16 processors
+ Process 0: 2.17566 seconds
+ Process 1: 2.64321 seconds
+ Process 2: 2.11375 seconds
+ Process 3: 2.11043 seconds
+ Process 4: 2.06431 seconds
+ Process 5: 2.10409 seconds
+ Process 6: 2.10814 seconds
+ Process 7: 2.68683 seconds
+ Process 8: 2.68736 seconds
+ Process 9: 2.00837 seconds
+ Process 10: 2.68614 seconds
+ Process 11: 2.66983 seconds
+ Process 12: 2.68503 seconds
+ Process 13: 2.10693 seconds
+ Process 14: 2.68798 seconds
+ Process 15: 2.6808 seconds
+Maximum Time: 2.68798 seconds
+Average Time Per Process: 2.38868 seconds
+--------------------------------------------

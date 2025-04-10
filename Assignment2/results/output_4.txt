@@ -1,0 +1,53 @@
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Initialized vertex 0 (global 0) to bucket 0 with distance 0
+Rank 1 Initial State:
+Local Graph Size: 491295
+Rank 2 Initial State:
+Local Graph Size: 491297
+Rank 0 Initial State:
+Local Graph Size: 491311
+Rank 3 Initial State:
+Local Graph Size: 491303
+Rank 2 terminating: no more work
+Rank 2 metrics:
+  Buckets processed: 22834
+  Vertices processed: 508114
+  Light edges processed: 2887732
+  Heavy edges processed: 2887732
+  Total edge relaxations: 2887732
+  Communication rounds: 23600
+Time taken by Processor 2: 1.62184 seconds
+Rank 0 terminating: no more work
+Rank 0 metrics:
+  Buckets processed: 22800
+  Vertices processed: 508058
+  Light edges processed: 2886968
+  Heavy edges processed: 2886968
+  Total edge relaxations: 2886968
+  Communication rounds: 23600
+Time taken by Processor 0: 1.62137 seconds
+Rank 1 terminating: no more work
+Rank 1 metrics:
+  Buckets processed: 22801
+  Vertices processed: 508137
+  Light edges processed: 2888142
+  Heavy edges processed: 2888142
+  Total edge relaxations: 2888142
+  Communication rounds: 23600
+Time taken by Processor 1: 1.62236 seconds
+Rank 3 terminating: no more work
+Rank 3 metrics:
+  Buckets processed: 22831
+  Vertices processed: 508054
+  Light edges processed: 2887090
+  Heavy edges processed: 2887090
+  Total edge relaxations: 2887090
+  Communication rounds: 23600
+Time taken by Processor 3: 1.61767 seconds
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅

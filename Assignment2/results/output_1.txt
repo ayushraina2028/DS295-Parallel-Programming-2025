@@ -1,0 +1,14 @@
+Number of Vertices: 1971281
+Initialized vertex 0 (global 0) to bucket 0 with distance 0
+Rank 0 Initial State:
+Local Graph Size: 1971281
+Rank 0 terminating: no more work
+Rank 0 metrics:
+  Buckets processed: 23636
+  Vertices processed: 2213323
+  Light edges processed: 12747732
+  Heavy edges processed: 12747732
+  Total edge relaxations: 12747732
+  Communication rounds: 23636
+Time taken by Processor 0: 2.0124 seconds
+MATCH ✅

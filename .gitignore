@@ -4,5 +4,6 @@ LatexNotes/*
 !LatexNotes/report.pdf
 Algorithms/Dijkstra/*.txt
 Algorithms/DeltaStepping/*.txt
-
+Assignment2/graph.txt
+Assignment2/SyntheticGraph.txt
 

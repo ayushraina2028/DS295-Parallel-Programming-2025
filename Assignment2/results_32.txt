@@ -1,0 +1,36 @@
+Execution with 32 processors
+ Process 0: 10.1115 seconds
+ Process 1: 9.59117 seconds
+ Process 2: 9.17036 seconds
+ Process 3: 8.60631 seconds
+ Process 4: 10.196 seconds
+ Process 5: 9.97388 seconds
+ Process 6: 8.73518 seconds
+ Process 7: 9.84017 seconds
+ Process 8: 10.2144 seconds
+ Process 9: 9.85653 seconds
+ Process 10: 10.2534 seconds
+ Process 11: 9.78819 seconds
+ Process 12: 9.75106 seconds
+ Process 13: 9.51742 seconds
+ Process 14: 9.84086 seconds
+ Process 15: 7.78818 seconds
+ Process 16: 7.91032 seconds
+ Process 17: 9.83572 seconds
+ Process 18: 10.0665 seconds
+ Process 19: 9.94935 seconds
+ Process 20: 9.9951 seconds
+ Process 21: 7.80098 seconds
+ Process 22: 10.1725 seconds
+ Process 23: 7.91667 seconds
+ Process 24: 9.06613 seconds
+ Process 25: 8.63249 seconds
+ Process 26: 10.0438 seconds
+ Process 27: 8.48779 seconds
+ Process 28: 10.0091 seconds
+ Process 29: 8.49209 seconds
+ Process 30: 9.30418 seconds
+ Process 31: 10.0246 seconds
+Maximum Time: 10.2534 seconds
+Average Time Per Process: 9.40444 seconds
+--------------------------------------------

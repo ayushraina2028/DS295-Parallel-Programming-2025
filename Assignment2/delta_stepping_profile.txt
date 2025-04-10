@@ -1,0 +1,33 @@
+===============================================
+DELTA-STEPPING HYBRID IMPLEMENTATION PROFILING
+===============================================
+Date: Mar 24 2025 17:10:03
+
+=== HARDWARE INFO ===
+CPU threads: 24
+GPU: NVIDIA GeForce GTX 1660 SUPER
+Compute capability: 7.5
+Global memory: 5936 MB
+Multiprocessors: 22
+Max threads per block: 1024
+
+OpenMP threads set to: 4
+Reading graph from: SyntheticGraph.txt
+=== GRAPH METRICS ===
+Graph loaded with 1971281 nodes and 5533214 edges.
+Graph density: -0.00554101
+Average node degree: 2.80691
+Maximum node degree: 12
+Edge weight range: [1, 100]
+Average edge weight: 50.5059
+Graph loading time: 1.43105 seconds
+
+Starting hybrid delta-stepping with:
+  Source node: 0
+  Delta: 5
+
+=== EXECUTION TRACE ===
+Processing iteration 10
+  Bucket 32 size: 1 nodes
+  Changes detected, reassigning nodes to buckets...
+  Iteration 10 completed in 0.299894 seconds

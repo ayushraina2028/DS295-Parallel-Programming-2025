@@ -1,0 +1,16 @@
+Execution with 4 processors
+ Process 0: 1.62137 seconds
+ Process 1: 1.62236 seconds
+ Process 2: 1.62184 seconds
+ Process 3: 1.61767 seconds
+Maximum Time: 1.62236 seconds
+Average Time Per Process: 1.62081 seconds
+--------------------------------------------
+Execution with 4 processors
+ Process 0: 1.61622 seconds
+ Process 1: 1.61339 seconds
+ Process 2: 1.61604 seconds
+ Process 3: 1.62228 seconds
+Maximum Time: 1.62228 seconds
+Average Time Per Process: 1.61698 seconds
+--------------------------------------------

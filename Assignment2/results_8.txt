@@ -1,0 +1,24 @@
+Execution with 8 processors
+ Process 0: 1.48393 seconds
+ Process 1: 1.48497 seconds
+ Process 2: 1.48732 seconds
+ Process 3: 1.48799 seconds
+ Process 4: 1.48651 seconds
+ Process 5: 1.48705 seconds
+ Process 6: 1.48229 seconds
+ Process 7: 1.48407 seconds
+Maximum Time: 1.48799 seconds
+Average Time Per Process: 1.48552 seconds
+--------------------------------------------
+Execution with 8 processors
+ Process 0: 1.48112 seconds
+ Process 1: 1.47144 seconds
+ Process 2: 1.52599 seconds
+ Process 3: 1.5037 seconds
+ Process 4: 1.52255 seconds
+ Process 5: 1.50881 seconds
+ Process 6: 1.52626 seconds
+ Process 7: 1.50788 seconds
+Maximum Time: 1.52626 seconds
+Average Time Per Process: 1.50597 seconds
+--------------------------------------------

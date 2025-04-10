@@ -1,0 +1,30 @@
+Execution with 1 processors
+ Process 0: 2.0124 seconds
+Maximum Time: 2.0124 seconds
+Average Time Per Process: 2.0124 seconds
+--------------------------------------------
+Execution with 1 processors
+ Process 0: 2.04405 seconds
+Maximum Time: 2.04405 seconds
+Average Time Per Process: 2.04405 seconds
+--------------------------------------------
+Execution with 1 processors
+ Process 0: 3.4576e-05 seconds
+Maximum Time: 3.4576e-05 seconds
+Average Time Per Process: 3.4576e-05 seconds
+--------------------------------------------
+Execution with 1 processors
+ Process 0: 9.8796e-05 seconds
+Maximum Time: 9.8796e-05 seconds
+Average Time Per Process: 9.8796e-05 seconds
+--------------------------------------------
+Execution with 1 processors
+ Process 0: 2.01611 seconds
+Maximum Time: 2.01611 seconds
+Average Time Per Process: 2.01611 seconds
+--------------------------------------------
+Execution with 1 processors
+ Process 0: 2.04758 seconds
+Maximum Time: 2.04758 seconds
+Average Time Per Process: 2.04758 seconds
+--------------------------------------------

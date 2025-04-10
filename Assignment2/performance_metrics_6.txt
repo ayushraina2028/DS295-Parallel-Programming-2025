@@ -1,0 +1,38 @@
+DELTA-STEPPING PERFORMANCE METRICS
+=================================
+Graph Information:
+  Nodes: 1971281
+  Edges: 5533214
+  Source Node: 0
+  Delta Value: 40
+
+Timing Information:
+  Total Execution Time: 1.59243 seconds
+  Initial Data Transfer Time: 0.047203 seconds
+  Total Kernel Execution Time: 1.52963 seconds
+  Total Bucket Processing Time: 1.54243 seconds
+
+Parallel Performance Metrics:
+  Number of Threads: 8
+  Sequential Execution Time: 4.5 seconds
+  Parallel Execution Time: 1.59243 seconds
+  Speedup: 2.82586x
+  Efficiency: 35.3233%
+
+Algorithm Statistics:
+  Iterations Completed: 5
+  Number of Buckets Processed: 5
+
+Algorithmic Efficiency Metrics:
+  Compression Factor: 394256
+  Edge Relaxation Rate: 3.47469e+06 edges/second
+  Computational Intensity: 3.61736e+06 edges/second/kernel
+
+Detailed Per-Bucket Performance:
+  Bucket ID | Size | Processing Time (seconds)
+  -----------------------------------------
+  0 | 1 | 0.342706
+  1 | 1 | 0.300337
+  2 | 3 | 0.300706
+  3 | 1 | 0.30044
+  4 | 3 | 0.298238

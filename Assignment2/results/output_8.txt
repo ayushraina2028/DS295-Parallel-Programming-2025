@@ -1,0 +1,105 @@
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Number of Vertices: 1971281
+Rank 3 Initial State:
+Local Graph Size: 245650
+Rank 2 Initial State:
+Local Graph Size: 245673
+Rank 5 Initial State:
+Local Graph Size: 245605
+Rank 4 Initial State:
+Local Graph Size: 245645
+Rank 1 Initial State:
+Local Graph Size: 245690
+Initialized vertex 0 (global 0) to bucket 0 with distance 0
+Rank 7 Initial State:
+Local Graph Size: 245653
+Rank 0 Initial State:
+Local Graph Size: 245666
+Rank 6 Initial State:
+Local Graph Size: 245624
+Rank 5 terminating: no more work
+Rank 5 metrics:
+  Buckets processed: 22170
+  Vertices processed: 248854
+  Light edges processed: 1408468
+  Heavy edges processed: 1408468
+  Total edge relaxations: 1408468
+  Communication rounds: 23594
+Time taken by Processor 5: 1.48705 seconds
+Rank 1 terminating: no more work
+Rank 1 metrics:
+  Buckets processed: 22161
+  Vertices processed: 248833
+  Light edges processed: 1409416
+  Heavy edges processed: 1409416
+  Total edge relaxations: 1409416
+  Communication rounds: 23594
+Time taken by Processor 1: 1.48497 seconds
+Rank 4 terminating: no more work
+Rank 4 metrics:
+  Buckets processed: 22160
+  Vertices processed: 248751
+  Light edges processed: 1408794
+  Heavy edges processed: 1408794
+  Total edge relaxations: 1408794
+  Communication rounds: 23594
+Time taken by Processor 4: 1.48651 seconds
+Rank 6 terminating: no more work
+Rank 6 metrics:
+  Buckets processed: 22183
+  Vertices processed: 248741
+  Light edges processed: 1408318
+  Heavy edges processed: 1408318
+  Total edge relaxations: 1408318
+  Communication rounds: 23594
+Time taken by Processor 6: 1.48229 seconds
+Rank 7 terminating: no more work
+Rank 7 metrics:
+  Buckets processed: 22144
+  Vertices processed: 248926
+  Light edges processed: 1409968
+  Heavy edges processed: 1409968
+  Total edge relaxations: 1409968
+  Communication rounds: 23594
+Time taken by Processor 7: 1.48407 seconds
+Rank 3 terminating: no more work
+Rank 3 metrics:
+  Buckets processed: 22143
+  Vertices processed: 248640
+  Light edges processed: 1406380
+  Heavy edges processed: 1406380
+  Total edge relaxations: 1406380
+  Communication rounds: 23594
+Time taken by Processor 3: 1.48799 seconds
+Rank 2 terminating: no more work
+Rank 2 metrics:
+  Buckets processed: 22169
+  Vertices processed: 248806
+  Light edges processed: 1408196
+  Heavy edges processed: 1408196
+  Total edge relaxations: 1408196
+  Communication rounds: 23594
+Time taken by Processor 2: 1.48732 seconds
+Rank 0 terminating: no more work
+Rank 0 metrics:
+  Buckets processed: 22202
+  Vertices processed: 248785
+  Light edges processed: 1407202
+  Heavy edges processed: 1407202
+  Total edge relaxations: 1407202
+  Communication rounds: 23594
+Time taken by Processor 0: 1.48393 seconds
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅
+MATCH ✅

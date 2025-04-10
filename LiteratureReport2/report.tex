@@ -1,0 +1,62 @@
+\documentclass{article}
+
+\usepackage{listings} % For code formatting
+\usepackage[utf8]{inputenc}  % For encoding support
+\usepackage{amsmath}         % For mathematical formatting
+\usepackage{graphicx}        % For including images
+\usepackage{xcolor}
+\usepackage[a4paper, left=0.5in, right=0.5in, top=0.5in, bottom=0.5in]{geometry}  % Adjust margins here
+\usepackage{tcolorbox}
+\usepackage{palatino}  % Use Inconsolata font (or replace with your choice)
+\usepackage{amsmath, amssymb, array, booktabs}
+
+% Define colors
+\definecolor{codebg}{RGB}{240, 240, 240}  % Light gray background
+\definecolor{framecolor}{RGB}{100, 100, 100}  % Dark gray frame
+\definecolor{titlebg}{RGB}{30, 30, 30}  % Dark title background
+\definecolor{titlefg}{RGB}{255, 255, 255}  % White title text
+
+% Custom lstset
+\lstset{
+    language=C++,                    
+    basicstyle=\ttfamily\footnotesize\fontfamily{zi4}\selectfont, % Use Inconsolata
+    keywordstyle=\bfseries\color{blue},        
+    commentstyle=\itshape\color{gray},        
+    stringstyle=\color{red},          
+    numbers=left,                     
+    numberstyle=\tiny\color{blue},    
+    frame=single,                     
+    breaklines=true,                   
+    captionpos=b,                      
+    backgroundcolor=\color{codebg},  % Light gray background
+    rulecolor=\color{framecolor},    % Dark frame
+    tabsize=4                         
+}
+
+% Custom command to add a styled heading
+\newtcbox{\codebox}{colback=titlebg, colframe=titlebg, colupper=titlefg, 
+  boxrule=0pt, arc=5pt, left=5pt, right=5pt, top=3pt, bottom=3pt}
+
+\title{AnySeq/GPU: A Novel Approach for Faster Sequence Alignment on GPUs}
+
+\author{Ayush Raina, 22148}
+\date{\today}
+
+\begin{document} 
+
+\maketitle
+
+\subsection*{Overview}
+The paper introduces \textbf{AnySeq/GPU}, a fast sequence alignment library optimized for GPUs. It improves performance by reducing memory accesses using \textbf{warp shuffles} and \textbf{half precision arithmetic}, and it uses the \textbf{AnyDSL compiler} for efficient GPU code generation. The library achieves up to \textbf{3.8 TCUPS}, outperforming previous GPU-based aligners like GASAL2 and NVBIO by up to \textbf{19.2x}. It runs efficiently on both NVIDIA and AMD GPUs and is open-source.
+
+\subsection*{Motivation}
+Sequence alignment is essential in bioinformatics, especially with the rapid growth of \textbf{Next-Generation Sequencing (NGS)} data. Traditional alignment algorithms like \textbf{Needleman-Wunsch} and \textbf{Smith-Waterman} use dynamic programming (DP) and have high time complexity, making them slow for large-scale NGS data (both short and long reads). While many alignment tools have been developed for \textbf{CPUs, GPUs, and FPGAs}, current GPU-based tools often suffer from:
+    Inefficient memory access patterns,
+    Lack of performance portability across different sequence lengths and alignment types,
+    Limited optimization to only specific CUDA-enabled GPUs.
+To overcome these limitations, the authors propose AnySeq/GPU, an optimized GPU-based extension of the AnySeq library.
+
+\subsection*{Methodology and Key Contributions}
+1. \textbf{Unique Parallelization Strategy: }Introduces a new fine grained GPU Parallelization technique using \textbf{warp intrinsics} and a novel \textbf{DP Matrix Partitioning} scheme that handles batches with varying sequence lengths efficiently. \\ \\ 
+2. \textbf{Hardware Independent Implementation: }It leverages \textbf{AnyDSL}, a domain specific language framework which is used to generate optimized kernels for both \textbf{NVIDIA} and \textbf{AMD} GPUs.
+\end{document}

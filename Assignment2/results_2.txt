@@ -1,0 +1,6 @@
+Execution with 2 processors
+ Process 0: 1.81848 seconds
+ Process 1: 1.82236 seconds
+Maximum Time: 1.82236 seconds
+Average Time Per Process: 1.82042 seconds
+--------------------------------------------

@@ -1,0 +1,4 @@
+Delta,TotalTime(s),GPUKernelTime(s),MemoryTransferTime(s),BucketProcessingTime(s),Iterations,Result
+1,6.119216,5.989241,0.085712,0.041480,20,NO_MATCH
+2,3.631607,3.591557,0.016157,0.022770,12,NO_MATCH
+5,3.352871,3.314776,0.015712,0.021243,11,NO_MATCH
