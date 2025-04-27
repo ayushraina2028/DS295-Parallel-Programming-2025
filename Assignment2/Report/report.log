@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.2.6)  24 MAR 2025 23:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.2.6)  25 APR 2025 18:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/ayushraina/Desktop/6thSemester/AI/ParallelDeltaStepping/Report/report.tex
-(/home/ayushraina/Desktop/6thSemester/AI/ParallelDeltaStepping/Report/report.tex
+**/home/ayushraina/Desktop/6thSemester/ParallelProgramming/Assignment2/Report/report.tex
+(/home/ayushraina/Desktop/6thSemester/ParallelProgramming/Assignment2/Report/report.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -335,55 +335,113 @@ Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
 \tcb@temp=\box70
 ) (/usr/share/texlive/texmf-dist/tex/latex/psnfss/palatino.sty
 Package: palatino 2020/03/25 PSNFSS-v9.3 (SPQR) 
-) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
+) (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)) (/usr/share/texlive/texmf-dist/tex/latex/tools/theorem.sty
+Package: theorem 2023/07/05 v2.2c Theorem extension package (FMi)
+\theorem@style=\toks39
+\theorem@bodyfont=\toks40
+\theorempreskipamount=\skip53
+\theorempostskipamount=\skip54
+ (/usr/share/texlive/texmf-dist/tex/latex/tools/thp.sty
+File: thp.sty 2023/07/05 v2.2c Theorem extension package (FMi)
+)) (/usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgffor.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)) (/usr/share/texlive/texmf-dist/tex/latex/pgf/math/pgfmath.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2023-01-15 v3.1.10 (3.1.10)
+\pgffor@iter=\dimen260
+\pgffor@skip=\dimen261
+\pgffor@stack=\toks41
+\pgffor@toks=\toks42
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Package: tikz 2023-01-15 v3.1.10 (3.1.10)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgf@plot@mark@count=\count300
+\pgfplotmarksize=\dimen262
+)
+\tikz@lastx=\dimen263
+\tikz@lasty=\dimen264
+\tikz@lastxsaved=\dimen265
+\tikz@lastysaved=\dimen266
+\tikz@lastmovetox=\dimen267
+\tikz@lastmovetoy=\dimen268
+\tikzleveldistance=\dimen269
+\tikzsiblingdistance=\dimen270
+\tikz@figbox=\box71
+\tikz@figbox@bg=\box72
+\tikz@tempbox=\box73
+\tikz@tempbox@bg=\box74
+\tikztreelevel=\count301
+\tikznumberofchildren=\count302
+\tikznumberofcurrentchild=\count303
+\tikz@fig@count=\count304
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2023-01-15 v3.1.10 (3.1.10)
+\pgfmatrixcurrentrow=\count305
+\pgfmatrixcurrentcolumn=\count306
+\pgf@matrix@numberofcolumns=\count307
+)
+\tikz@expandcount=\count308
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2023-01-15 v3.1.10 (3.1.10)
+))) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
 )
-LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 42.
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 45.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 ) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count300
-\l__pdf_internal_box=\box71
+\l__color_backend_stack_int=\count309
+\l__pdf_internal_box=\box75
 ) (./report.aux
 
 LaTeX Warning: Label `fig:efficiency' multiply defined.
 
+
+LaTeX Warning: Label `tab:delta_timing' multiply defined.
+
 )
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
-LaTeX Font Info:    ... okay on input line 42.
-\c@lstlisting=\count301
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 45.
+LaTeX Font Info:    ... okay on input line 45.
+\c@lstlisting=\count310
  (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count302
-\scratchdimen=\dimen260
-\scratchbox=\box72
-\nofMPsegments=\count303
-\nofMParguments=\count304
-\everyMPshowfont=\toks39
-\MPscratchCnt=\count305
-\MPscratchDim=\dimen261
-\MPnumerator=\count306
-\makeMPintoPDFobject=\count307
-\everyMPtoPDFconversion=\toks40
+\scratchcounter=\count311
+\scratchdimen=\dimen271
+\scratchbox=\box76
+\nofMPsegments=\count312
+\nofMParguments=\count313
+\everyMPshowfont=\toks43
+\MPscratchCnt=\count314
+\MPscratchDim=\dimen272
+\MPnumerator=\count315
+\makeMPintoPDFobject=\count316
+\everyMPtoPDFconversion=\toks44
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -424,69 +482,139 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 55.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+LaTeX Font Info:    Trying to load font information for U+msa on input line 47.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 47.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 58.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ppl.fd
 File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
 ) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}]
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 108.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 118.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-<speedup.png, id=14, 715.83435pt x 426.393pt>
+) [2] [3]
+Overfull \hbox (3.76215pt too wide) in paragraph at lines 245--245
+ []    \OT1/pcr/m/n/10 vector<VertexInfo> localGraph = distributeGraph(globalGraph, rank, numProcesses,[] 
+ []
+
+
+Overfull \hbox (69.76215pt too wide) in paragraph at lines 251--251
+ []    \OT1/pcr/m/n/10 vector<VertexDistance> localDistances = initializeDistances(sourceVertex, vertexMap, rank); 
+ []
+
+[4] [5]
+<speedup.png, id=27, 715.83435pt x 426.393pt>
 File: speedup.png Graphic file (type png)
 <use speedup.png>
-Package pdftex.def Info: speedup.png  used on input line 143.
+Package pdftex.def Info: speedup.png  used on input line 411.
 (pdftex.def)             Requested size: 420.19191pt x 250.29446pt.
-<executionTime.png, id=16, 716.1957pt x 426.393pt>
+<executionTime.png, id=29, 716.1957pt x 426.393pt>
 File: executionTime.png Graphic file (type png)
 <use executionTime.png>
-Package pdftex.def Info: executionTime.png  used on input line 150.
+Package pdftex.def Info: executionTime.png  used on input line 418.
 (pdftex.def)             Requested size: 420.19191pt x 250.16434pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[2 <./Speedup.png>]
-<overhead.png, id=22, 715.473pt x 426.393pt>
+[6 <./Speedup.png>]
+<overhead.png, id=34, 715.473pt x 426.393pt>
 File: overhead.png Graphic file (type png)
 <use overhead.png>
-Package pdftex.def Info: overhead.png  used on input line 162.
+Package pdftex.def Info: overhead.png  used on input line 430.
 (pdftex.def)             Requested size: 420.19191pt x 250.41808pt.
- [3 <./executionTime.png> <./overhead.png>]
-<efficiency.png, id=30, 715.83435pt x 426.393pt>
+ [7 <./executionTime.png> <./overhead.png>]
+<efficiency.png, id=43, 715.83435pt x 426.393pt>
 File: efficiency.png Graphic file (type png)
 <use efficiency.png>
-Package pdftex.def Info: efficiency.png  used on input line 174.
+Package pdftex.def Info: efficiency.png  used on input line 442.
 (pdftex.def)             Requested size: 420.19191pt x 250.29446pt.
- [4 <./Efficiency.png>]
-<speedup_vs_delta.png, id=35, 578.16pt x 433.62pt>
+ [8 <./Efficiency.png>]
+Overfull \hbox (20.76212pt too wide) in paragraph at lines 535--535
+[]                    \OT1/pcr/m/n/10 if (new_dist >= 0 && (d_dist[v] == DIST_INF || new_dist < d_dist[v])) {[] 
+ []
+
+[9]
+Overfull \hbox (9.76215pt too wide) in paragraph at lines 594--594
+ []    \OT1/pcr/m/n/10 checkCudaError(cudaMemcpy(d_edges_src, graph.src.data(), num_edges * sizeof(int), 
+ []
+
+
+Overfull \hbox (9.76215pt too wide) in paragraph at lines 596--596
+ []    \OT1/pcr/m/n/10 checkCudaError(cudaMemcpy(d_edges_dst, graph.dst.data(), num_edges * sizeof(int),[] 
+ []
+
+[10]
+Overfull \hbox (15.76215pt too wide) in paragraph at lines 635--635
+ []    \OT1/pcr/m/n/10 int blocksPerGrid = (bucket_nodes.size() + threadsPerBlock - 1) / threadsPerBlock;[] 
+ []
+
+
+Overfull \hbox (3.76215pt too wide) in paragraph at lines 661--661
+ []                \OT1/pcr/m/n/10 if (i != source && find(bucket_nodes.begin(), bucket_nodes.end(), i)[] 
+ []
+
+[11]
+<speedup_vs_delta.png, id=57, 578.16pt x 433.62pt>
 File: speedup_vs_delta.png Graphic file (type png)
 <use speedup_vs_delta.png>
-Package pdftex.def Info: speedup_vs_delta.png  used on input line 233.
+Package pdftex.def Info: speedup_vs_delta.png  used on input line 762.
 (pdftex.def)             Requested size: 210.09193pt x 157.56532pt.
-<execution_time_vs_delta.png, id=36, 578.16pt x 433.62pt>
+<execution_time_vs_delta.png, id=58, 578.16pt x 433.62pt>
 File: execution_time_vs_delta.png Graphic file (type png)
 <use execution_time_vs_delta.png>
-Package pdftex.def Info: execution_time_vs_delta.png  used on input line 234.
+Package pdftex.def Info: execution_time_vs_delta.png  used on input line 763.
 (pdftex.def)             Requested size: 210.09193pt x 157.56532pt.
-<efficiency_vs_delta.png, id=37, 578.16pt x 433.62pt>
+<efficiency_vs_delta.png, id=59, 578.16pt x 433.62pt>
 File: efficiency_vs_delta.png Graphic file (type png)
 <use efficiency_vs_delta.png>
-Package pdftex.def Info: efficiency_vs_delta.png  used on input line 235.
+Package pdftex.def Info: efficiency_vs_delta.png  used on input line 764.
 (pdftex.def)             Requested size: 210.09193pt x 157.56532pt.
-<KernelTime.png, id=38, 602.0091pt x 338.2236pt>
+<KernelTime.png, id=60, 602.0091pt x 338.2236pt>
 File: KernelTime.png Graphic file (type png)
 <use KernelTime.png>
-Package pdftex.def Info: KernelTime.png  used on input line 236.
+Package pdftex.def Info: KernelTime.png  used on input line 765.
 (pdftex.def)             Requested size: 210.09193pt x 118.03426pt.
-<kernelOverhead.png, id=39, 602.0091pt x 338.2236pt>
+<kernelOverhead.png, id=61, 602.0091pt x 338.2236pt>
 File: kernelOverhead.png Graphic file (type png)
 <use kernelOverhead.png>
-Package pdftex.def Info: kernelOverhead.png  used on input line 237.
+Package pdftex.def Info: kernelOverhead.png  used on input line 766.
 (pdftex.def)             Requested size: 210.09193pt x 118.03426pt.
- [5 <./speedup_vs_delta.png> <./execution_time_vs_delta.png> <./efficiency_vs_delta.png> <./KernelTime.png> <./kernelOverhead.png>] (./report.aux)
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+File: execution_time_vs_delta.png Graphic file (type png)
+<use execution_time_vs_delta.png>
+Package pdftex.def Info: execution_time_vs_delta.png  used on input line 780.
+(pdftex.def)             Requested size: 525.23788pt x 393.9464pt.
+[12]
+File: KernelTime.png Graphic file (type png)
+<use KernelTime.png>
+Package pdftex.def Info: KernelTime.png  used on input line 799.
+(pdftex.def)             Requested size: 525.23788pt x 295.09338pt.
+ [13 <./speedup_vs_delta.png> <./execution_time_vs_delta.png> <./efficiency_vs_delta.png> <./KernelTime.png> <./kernelOverhead.png>]
+File: kernelOverhead.png Graphic file (type png)
+<use kernelOverhead.png>
+Package pdftex.def Info: kernelOverhead.png  used on input line 818.
+(pdftex.def)             Requested size: 525.23788pt x 295.09338pt.
+File: speedup_vs_delta.png Graphic file (type png)
+<use speedup_vs_delta.png>
+Package pdftex.def Info: speedup_vs_delta.png  used on input line 839.
+(pdftex.def)             Requested size: 525.23788pt x 393.9464pt.
+ [14]
+File: efficiency_vs_delta.png Graphic file (type png)
+<use efficiency_vs_delta.png>
+Package pdftex.def Info: efficiency_vs_delta.png  used on input line 858.
+(pdftex.def)             Requested size: 525.23788pt x 393.9464pt.
+ [15] [16] [17] [18] (./report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -497,18 +625,18 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 14483 strings out of 474222
- 286347 string characters out of 5748734
+ 17576 strings out of 474222
+ 353058 string characters out of 5748734
  1941975 words of memory out of 5000000
- 36507 multiletter control sequences out of 15000+600000
- 569140 words of font info for 66 fonts, out of 8000000 for 9000
+ 39539 multiletter control sequences out of 15000+600000
+ 573036 words of font info for 81 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 83i,8n,87p,780b,266s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,8n,87p,787b,366s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb>
-Output written on report.pdf (5 pages, 1014980 bytes).
+Output written on report.pdf (18 pages, 1051267 bytes).
 PDF statistics:
- 83 PDF objects out of 1000 (max. 8388607)
- 41 compressed objects within 1 object stream
+ 125 PDF objects out of 1000 (max. 8388607)
+ 70 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  58 words of extra memory for PDF output out of 10000 (max. 10000000)
 

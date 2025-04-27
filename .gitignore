@@ -6,4 +6,7 @@ Algorithms/Dijkstra/*.txt
 Algorithms/DeltaStepping/*.txt
 Assignment2/graph.txt
 Assignment2/SyntheticGraph.txt
+Project/datasets/
+Project/gmm_predictions_cpp.csv
+Project/gmm_results_python.csv
 
