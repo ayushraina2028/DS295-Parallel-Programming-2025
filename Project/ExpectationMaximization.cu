@@ -9,6 +9,74 @@ using namespace std;
 using namespace Eigen;
 using namespace chrono;
 
+// Improved GPU kernel for calculating log-likelihoods directly in log space
+__global__ void calculateLogProbsKernel(
+    const float* X,
+    const float* means,
+    const float* precisions,
+    const float* normalizers,
+    const float* log_weights,
+    float* log_probs,
+    int n_samples,
+    int n_components,
+    int n_features)
+{
+    int sample_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (sample_idx < n_samples) {
+        for (int k = 0; k < n_components; k++) {
+            float exponent = 0.0f;
+            
+            for (int i = 0; i < n_features; i++) {
+                float diff_i = X[sample_idx * n_features + i] - means[k * n_features + i];
+                for (int j = 0; j < n_features; j++) {
+                    float diff_j = X[sample_idx * n_features + j] - means[k * n_features + j];
+                    exponent += diff_i * precisions[k * n_features * n_features + i * n_features + j] * diff_j;
+                }
+            }
+            
+            // Store log probability directly
+            log_probs[sample_idx * n_components + k] = log_weights[k] + normalizers[k] - 0.5f * exponent;
+        }
+    }
+}
+
+// Kernel for computing responsibilities using log-sum-exp trick
+__global__ void calculateResponsibilitiesKernel(
+    float* log_probs,
+    float* responsibilities,
+    float* log_likelihood_values,
+    int n_samples,
+    int n_components)
+{
+    int sample_idx = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (sample_idx < n_samples) {
+        // Find max log prob for numerical stability
+        float max_log_prob = -FLT_MAX;
+        for (int k = 0; k < n_components; k++) {
+            max_log_prob = fmaxf(max_log_prob, log_probs[sample_idx * n_components + k]);
+        }
+        
+        // Compute sum of exp(log_probs - max_log_prob)
+        float sum_exp = 0.0f;
+        for (int k = 0; k < n_components; k++) {
+            sum_exp += expf(log_probs[sample_idx * n_components + k] - max_log_prob);
+        }
+        
+        // Compute log-sum-exp
+        float log_sum_exp = max_log_prob + logf(sum_exp);
+        log_likelihood_values[sample_idx] = log_sum_exp;
+        
+        // Compute responsibilities
+        for (int k = 0; k < n_components; k++) {
+            responsibilities[sample_idx * n_components + k] = 
+                expf(log_probs[sample_idx * n_components + k] - log_sum_exp);
+        }
+    }
+}
+
+
 // CUDA kernel for computing new means
 __global__ void updateMeansKernel(float* data, float* responsibilities, float* means, 
                                  int n_samples, int n_dims, int n_components) {
@@ -235,18 +303,18 @@ class GaussianMixtureModel {
         }
 
         // In initialization or after covariance updates:
-        void precomputePDFTerms() {
-            int d = means[0].size();
-            precisions.resize(num_components);
-            normalizers.resize(num_components);
+        // void precomputePDFTerms() {
+        //     int d = means[0].size();
+        //     precisions.resize(num_components);
+        //     normalizers.resize(num_components);
             
-            #pragma omp parallel for
-            for(int k = 0; k < num_components; k++) {
-                precisions[k] = covariances[k].inverse();
-                double logdet = log(covariances[k].determinant());
-                normalizers[k] = -0.5 * (d * log(2.0 * M_PI) + logdet);
-            }
-        }
+        //     #pragma omp parallel for
+        //     for(int k = 0; k < num_components; k++) {
+        //         precisions[k] = covariances[k].inverse();
+        //         double logdet = log(covariances[k].determinant());
+        //         normalizers[k] = -0.5 * (d * log(2.0 * M_PI) + logdet);
+        //     }
+        // }
 
         // Then in PDF calculation:
         double fastMultivariateGaussianPDF(const VectorXd& x, int k) {
@@ -677,10 +745,10 @@ class GaussianMixtureModel {
                     }
                     
                     covariance /= N_k(k);
-                    covariances[k] = covariance + MatrixXd::Identity(n_features, n_features) * 1e-6;
+                    covariances[k] = covariance + MatrixXd::Identity(n_features, n_features) * 1e-3;
                 }
                 else {
-                    covariances[k] = MatrixXd::Identity(n_features, n_features) * 1e-6;
+                    covariances[k] = MatrixXd::Identity(n_features, n_features) * 1e-3;
                 }
             }
             
@@ -692,14 +760,209 @@ class GaussianMixtureModel {
             timing["m_step"].push_back(getDuration(start_time, end_time));
         }
     
+        // Improved CUDA E-step that works in log space
+        pair<MatrixXd, double> E_STEP_CUDA_Stable(const MatrixXd& X) {
+            auto start_time = getTime();
+
+            int n_samples = X.rows();
+            int n_features = X.cols();
+            
+            // Convert all Eigen data to flat arrays
+            std::vector<float> h_X = eigenToArray<float>(X);
+            std::vector<float> h_log_weights(num_components);
+            std::vector<float> h_means(num_components * n_features);
+            std::vector<float> h_precisions(num_components * n_features * n_features);
+            std::vector<float> h_normalizers(num_components);
+            
+            // Copy data with log weights
+            for (int k = 0; k < num_components; k++) {
+                h_log_weights[k] = static_cast<float>(log(weights(k)));
+                h_normalizers[k] = static_cast<float>(normalizers[k]);
+                
+                // Copy means
+                for (int j = 0; j < n_features; j++) {
+                    h_means[k * n_features + j] = static_cast<float>(means[k](j));
+                }
+                
+                // Copy precision matrices
+                for (int i = 0; i < n_features; i++) {
+                    for (int j = 0; j < n_features; j++) {
+                        h_precisions[k * n_features * n_features + i * n_features + j] = 
+                            static_cast<float>(precisions[k](i, j));
+                    }
+                }
+            }
+
+            // Allocate host memory for results
+            std::vector<float> h_log_probs(n_samples * num_components);
+            std::vector<float> h_responsibilities(n_samples * num_components);
+            std::vector<float> h_log_likelihood_values(n_samples);
+            
+            // Allocate device memory
+            float *d_X, *d_means, *d_precisions, *d_normalizers, *d_log_weights;
+            float *d_log_probs, *d_responsibilities, *d_log_likelihood_values;
+            
+            cudaMalloc(&d_X, n_samples * n_features * sizeof(float));
+            cudaMalloc(&d_means, num_components * n_features * sizeof(float));
+            cudaMalloc(&d_precisions, num_components * n_features * n_features * sizeof(float));
+            cudaMalloc(&d_normalizers, num_components * sizeof(float));
+            cudaMalloc(&d_log_weights, num_components * sizeof(float));
+            cudaMalloc(&d_log_probs, n_samples * num_components * sizeof(float));
+            cudaMalloc(&d_responsibilities, n_samples * num_components * sizeof(float));
+            cudaMalloc(&d_log_likelihood_values, n_samples * sizeof(float));
+            
+            // Copy data to device
+            cudaMemcpy(d_X, h_X.data(), n_samples * n_features * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_means, h_means.data(), num_components * n_features * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_precisions, h_precisions.data(), num_components * n_features * n_features * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_normalizers, h_normalizers.data(), num_components * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_log_weights, h_log_weights.data(), num_components * sizeof(float), cudaMemcpyHostToDevice);
+            
+            // Configure kernel
+            int blockSize = 256;
+            int numBlocks = (n_samples + blockSize - 1) / blockSize;
+            
+            // Launch log probs kernel
+            calculateLogProbsKernel<<<numBlocks, blockSize>>>(
+                d_X, d_means, d_precisions, d_normalizers, d_log_weights, d_log_probs,
+                n_samples, num_components, n_features
+            );
+            
+            // Launch responsibilities kernel
+            calculateResponsibilitiesKernel<<<numBlocks, blockSize>>>(
+                d_log_probs, d_responsibilities, d_log_likelihood_values,
+                n_samples, num_components
+            );
+            
+            // Copy results back to host
+            cudaMemcpy(h_responsibilities.data(), d_responsibilities, n_samples * num_components * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_log_likelihood_values.data(), d_log_likelihood_values, n_samples * sizeof(float), cudaMemcpyDeviceToHost);
+            
+            // Copy data to Eigen matrix
+            MatrixXd responsibilities = arrayToEigen(h_responsibilities.data(), n_samples, num_components);
+            
+            // Compute total log-likelihood
+            double log_likelihood = 0.0;
+            for (int i = 0; i < n_samples; i++) {
+                log_likelihood += h_log_likelihood_values[i];
+            }
+            
+            // Free device memory
+            cudaFree(d_X);
+            cudaFree(d_means);
+            cudaFree(d_precisions);
+            cudaFree(d_normalizers);
+            cudaFree(d_log_weights);
+            cudaFree(d_log_probs);
+            cudaFree(d_responsibilities);
+            cudaFree(d_log_likelihood_values);
+            
+            // Record timing
+            auto end_time = getTime();
+            timing["e_step"].push_back(getDuration(start_time, end_time));
+            
+            return make_pair(responsibilities, log_likelihood);
+        }
+
+        // Improved precomputation function with enhanced error checking and handling
+        void precomputePDFTerms() {
+            int d = means[0].size();
+            precisions.resize(num_components);
+            normalizers.resize(num_components);
+            
+            // First, make sure all covariances are well-conditioned
+            regularizeCovariances(1e-6 * (1.0 + 0.01 * d)); // Scale regularization with dimension
+            
+            #pragma omp parallel for
+            for(int k = 0; k < num_components; k++) {
+                // Try to compute the inverse and determinant safely
+                bool success = false;
+                double det = 0.0;
+                
+                try {
+                    // Use LLT decomposition for positive definite matrices
+                    Eigen::LLT<MatrixXd> llt(covariances[k]);
+                    if(llt.info() == Eigen::Success) {
+                        // Use the LLT decomposition to find precision and determinant
+                        precisions[k] = llt.solve(MatrixXd::Identity(d, d));
+                        det = covariances[k].determinant();
+                        success = true;
+                    }
+                } catch(...) {
+                    // Decomposition failed
+                    success = false;
+                }
+                
+                if(!success || !isfinite(det) || det <= 0) {
+                    // Fallback strategy: stronger regularization
+                    MatrixXd reg_cov = covariances[k] + MatrixXd::Identity(d, d) * (1e-4 * (1.0 + d));
+                    
+                    try {
+                        // Try again
+                        precisions[k] = reg_cov.inverse();
+                        det = reg_cov.determinant();
+                        
+                        // Update the covariance matrix with the regularized version
+                        covariances[k] = reg_cov;
+                        
+                        if(!isfinite(det) || det <= 0) {
+                            throw std::runtime_error("Determinant is still not positive");
+                        }
+                    } catch(...) {
+                        // Last resort: use diagonal covariance
+                        VectorXd diag = covariances[k].diagonal();
+                        double avg_var = diag.mean();
+                        if(avg_var <= 0 || !isfinite(avg_var)) {
+                            avg_var = 1.0;
+                        }
+                        
+                        MatrixXd new_cov = MatrixXd::Identity(d, d) * avg_var;
+                        covariances[k] = new_cov;
+                        precisions[k] = new_cov.inverse();
+                        det = new_cov.determinant();
+                    }
+                }
+                
+                // Compute log determinant safely
+                double logdet = log(det);
+                normalizers[k] = -0.5 * (d * log(2.0 * M_PI) + logdet);
+            }
+        }
+
+        // Add a condition number check for covariance matrices
+        double computeConditionNumber(const MatrixXd& mat) {
+            Eigen::JacobiSVD<MatrixXd> svd(mat);
+            double cond = svd.singularValues()(0) / 
+                        svd.singularValues()(svd.singularValues().size()-1);
+            return cond;
+        }
+
+        void checkAndReportConditionNumbers() {
+            cout << "Checking condition numbers of covariance matrices..." << endl;
+            
+            for(int k = 0; k < num_components; k++) {
+                double cond = computeConditionNumber(covariances[k]);
+                cout << "Component " << k << " condition number: " << cond;
+                
+                if(cond > 1e6) {
+                    cout << " (POOR CONDITIONING!)";
+                }
+                cout << endl;
+            }
+        }
+
+        // Improved fit method with better error handling
         void fit(const MatrixXd& X) {
             auto total_start_time = getTime();
             iterationCount = 0;
             
             vector<double> log_likelihoods;
-
+            
             /* Initialization based on dimension */
             int n_features = X.cols();
+            int n_samples = X.rows();
+            
+            // Choose initialization strategy
             if (n_features == 1) {
                 cout << "Using manual initialization for 1D data" << endl;
                 manualInitialization1D(X);
@@ -707,42 +970,117 @@ class GaussianMixtureModel {
                 cout << "Using K-means++ style initialization for multi-dimensional data" << endl;
                 randomInitialization(X);
             }
-            // randomInitialization(X);
-
-            // Print initial parameters
-            printModelParameters("Initial");
-
-            precomputePDFTerms();
+            
+            // Precompute PDF terms with enhanced error checking
+            try {
+                precomputePDFTerms();
+            } catch(const std::exception& e) {
+                cerr << "Error during initialization: " << e.what() << endl;
+                cerr << "Using fallback initialization..." << endl;
+                
+                // Fallback initialization with strong regularization
+                for(int k = 0; k < num_components; k++) {
+                    covariances[k] = MatrixXd::Identity(n_features, n_features) * (1.0 + 0.1 * k);
+                }
+                precomputePDFTerms();
+            }
             
             double prevLogLikelihood = -numeric_limits<double>::infinity();
             double currentLogLikelihood = -numeric_limits<double>::infinity();
             int noImprovementCount = 0;
-    
+            
+            // Check covariance condition numbers before iterations
+            // if(n_features > 10) {
+            //     checkAndReportConditionNumbers();
+            // }
+
+            // Main EM loop
             for(int iteration = 0; iteration < maxIterations; iteration++) {
                 iterationCount++;
                 auto iter_start_time = getTime();
                 
-                /* E-Step */
+                /* E-Step with improved numerical stability */
                 pair<MatrixXd, double> RL;
-
-                if(use_cuda) {
-                    RL = E_STEP_CUDA(X);
-                } else {
-                    RL = E_STEP(X);
+                
+                try {
+                    if(use_cuda) {
+                        // Use the numerically stable GPU implementation
+                        RL = E_STEP_CUDA_Stable(X);
+                    } else {
+                        // Use the numerically stable CPU implementation
+                        RL = E_STEP_Stable(X);
+                    }
+                } catch(const std::exception& e) {
+                    cerr << "Error in E-step: " << e.what() << endl;
+                    
+                    // Try to recover
+                    regularizeCovariances(1e-4 * (1.0 + 0.1 * n_features));
+                    precomputePDFTerms();
+                    
+                    if(use_cuda) {
+                        RL = E_STEP_CUDA_Stable(X);
+                    } else {
+                        RL = E_STEP_Stable(X);
+                    }
                 }
-
+                
                 MatrixXd responsibilities = RL.first;
                 double logLikelihood = RL.second;
-
+                
+                // Check for NaN log likelihood
+                if(!isfinite(logLikelihood)) {
+                    cerr << "Warning: Non-finite log-likelihood at iteration " << iteration << endl;
+                    
+                    // Try to recover
+                    if(iteration > 0) {
+                        // Revert to previous parameters and apply stronger regularization
+                        logLikelihood = prevLogLikelihood;
+                        regularizeCovariances(1e-3 * (1.0 + 0.1 * n_features));
+                        precomputePDFTerms();
+                    } else {
+                        // Reinitialize with stronger defaults
+                        for(int k = 0; k < num_components; k++) {
+                            covariances[k] = MatrixXd::Identity(n_features, n_features) * (1.0 + 0.1 * k);
+                        }
+                        precomputePDFTerms();
+                        
+                        // Retry E-step
+                        if(use_cuda) {
+                            RL = E_STEP_CUDA_Stable(X);
+                        } else {
+                            RL = E_STEP_Stable(X);
+                        }
+                        responsibilities = RL.first;
+                        logLikelihood = RL.second;
+                    }
+                }
+                
                 log_likelihoods.push_back(logLikelihood);
                 
                 /* M-Step */
-                // if(use_cuda and num_components > 12) {
-                //     M_STEP_CUDA(X, responsibilities);
-                // } else {
-                //     M_STEP(X, responsibilities);
-                // }
-                M_STEP(X,responsibilities);
+                try {
+                    // Use the most appropriate method
+                    M_STEP(X, responsibilities);
+                    
+                    // Apply additional regularization and check condition numbers
+                    if(n_features > 10 && iteration % 5 == 0) {
+                        regularizeCovariances(1e-6 * (1.0 + 0.01 * n_features));
+                        
+                        // Occasionally check condition numbers in higher dimensions
+                        // if(iteration % 20 == 0) {
+                        //     checkAndReportConditionNumbers();
+                        // }
+                    }
+                    
+                    // Recompute precision matrices
+                    precomputePDFTerms();
+                } catch(const std::exception& e) {
+                    cerr << "Error in M-step: " << e.what() << endl;
+                    
+                    // Try to recover
+                    regularizeCovariances(1e-3 * (1.0 + 0.1 * n_features));
+                    precomputePDFTerms();
+                }
                 
                 /* Record iteration time */
                 auto iter_end_time = getTime();
@@ -751,9 +1089,9 @@ class GaussianMixtureModel {
                 /* Checking Convergence */
                 if(iteration > 0) {
                     double improvement = logLikelihood - currentLogLikelihood;
-                    if(improvement < tolerance) {
+                    if(improvement < tolerance && improvement > -tolerance) {  // Allow for small negative changes
                         noImprovementCount++;
-                        if(noImprovementCount >= 3) {  // Require 3 consecutive small improvements
+                        if(noImprovementCount >= 3) {
                             cout << "Converged at iteration " << iteration << endl;
                             break;
                         }
@@ -762,16 +1100,21 @@ class GaussianMixtureModel {
                     }
                 }
                 
-                // Print progress every 10 iterations
-                // if(iteration % 10 == 0) {
-                cout << "Iteration " << iteration << ", Log Likelihood: " << logLikelihood << endl;
-                // }
+                // Print progress
+                cout << "Iteration " << iteration << ", Log Likelihood: " << logLikelihood;
+                
+                // Only print component info occasionally for high-dimensional problems
+                if(n_features < 5 || iteration % 10 == 0) {
+                    cout << ", Components: " << num_components;
+                }
+                
+                cout << endl;
                 
                 prevLogLikelihood = currentLogLikelihood;
                 currentLogLikelihood = logLikelihood;
                 bestLogLikelihood = currentLogLikelihood;
             }
-
+            
             saveLogLikelihoods(log_likelihoods);
             
             // Record total fit time
@@ -882,6 +1225,97 @@ class GaussianMixtureModel {
             file.close();
             std::cout << "Log likelihoods saved to " << filename << std::endl;
         }
+
+        double logMultivariateGaussianPDF(const VectorXd& x, const VectorXd& mean, const MatrixXd& precision, double normalizer) {
+            VectorXd diff = x - mean;
+            double exponent = -0.5 * diff.transpose() * precision * diff;
+            return exponent + normalizer;
+        }
+        
+        pair<MatrixXd, double> E_STEP_Stable(const MatrixXd& X) {
+            auto start_time = getTime();
+            
+            int n_samples = X.rows();
+            MatrixXd responsibilities = MatrixXd::Zero(n_samples, num_components);
+            MatrixXd log_probs = MatrixXd::Zero(n_samples, num_components);
+            VectorXd log_weights = weights.array().log();
+            
+            // Calculate log probabilities in parallel
+            #pragma omp parallel for
+            for(int i = 0; i < n_samples; i++) {
+                VectorXd sample = X.row(i);
+                
+                for(int k = 0; k < num_components; k++) {
+                    // Use log-space calculations
+                    log_probs(i, k) = log_weights(k) + logMultivariateGaussianPDF(sample, means[k], precisions[k], normalizers[k]);
+                }
+            }
+            
+            // Compute responsibilities using log-sum-exp trick to avoid numeric underflow
+            double log_likelihood = 0.0;
+            #pragma omp parallel for reduction(+:log_likelihood)
+            for(int i = 0; i < n_samples; i++) {
+                // Find max log prob for this sample (for numerical stability)
+                double max_log_prob = log_probs.row(i).maxCoeff();
+                
+                // Compute log-sum-exp
+                double log_sum_exp = 0.0;
+                for(int k = 0; k < num_components; k++) {
+                    log_sum_exp += exp(log_probs(i, k) - max_log_prob);
+                }
+                log_sum_exp = max_log_prob + log(log_sum_exp);
+                
+                // Update responsibilities
+                for(int k = 0; k < num_components; k++) {
+                    responsibilities(i, k) = exp(log_probs(i, k) - log_sum_exp);
+                }
+                
+                // Add to log-likelihood
+                log_likelihood += log_sum_exp;
+            }
+            
+            // Record E-step time
+            auto end_time = getTime();
+            timing["e_step"].push_back(getDuration(start_time, end_time));
+            
+            return make_pair(responsibilities, log_likelihood);
+        }
+        
+        // Improved covariance regularization method for M-step
+        void regularizeCovariances(double reg_factor = 1e-6) {
+            int n_features = means[0].size();
+            
+            for(int k = 0; k < num_components; k++) {
+                // Calculate eigendecomposition of the covariance matrix
+                SelfAdjointEigenSolver<MatrixXd> eigensolver(covariances[k]);
+                VectorXd eigenvalues = eigensolver.eigenvalues();
+                
+                // Find minimum eigenvalue
+                double min_eig = eigenvalues.minCoeff();
+                
+                // If minimum eigenvalue is too small, add regularization
+                if(min_eig < reg_factor || !eigenvalues.allFinite()) {
+                    // Scale regularization with dimensionality
+                    double adaptive_reg = reg_factor * (1.0 + 0.1 * n_features);
+                    
+                    // Add to diagonal elements
+                    for(int i = 0; i < n_features; i++) {
+                        covariances[k](i, i) += adaptive_reg;
+                    }
+                    
+                    // Verify that our regularization worked
+                    eigensolver.compute(covariances[k]);
+                    eigenvalues = eigensolver.eigenvalues();
+                    
+                    if(!eigenvalues.allFinite() || eigenvalues.minCoeff() <= 0) {
+                        // If still not positive definite, use more drastic regularization
+                        covariances[k] = MatrixXd::Identity(n_features, n_features) * 
+                                          (covariances[k].diagonal().mean() + adaptive_reg * 10);
+                    }
+                }
+            }
+        }
+        
         
         // Save timing information to file
         void saveTimingToFile(const string& filename, int n_samples, int n_features) {
