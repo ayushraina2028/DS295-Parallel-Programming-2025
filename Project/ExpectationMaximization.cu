@@ -9,6 +9,109 @@ using namespace std;
 using namespace Eigen;
 using namespace chrono;
 
+// CUDA kernel for computing new means
+__global__ void updateMeansKernel(float* data, float* responsibilities, float* means, 
+                                 int n_samples, int n_dims, int n_components) {
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components) {
+        for (int d = 0; d < n_dims; d++) {
+            float numerator = 0.0f;
+            float denominator = 0.0f;
+            
+            for (int i = 0; i < n_samples; i++) {
+                float resp = responsibilities[i * n_components + k];
+                numerator += resp * data[i * n_dims + d];
+                denominator += resp;
+            }
+            
+            // Avoid division by zero
+            if (denominator > 1e-10f) {
+                means[k * n_dims + d] = numerator / denominator;
+            }
+        }
+    }
+}
+
+// CUDA kernel for computing new covariances (supporting full covariance matrix)
+__global__ void updateCovariancesKernel(float* data, float* responsibilities, float* means, 
+                                       float* covariances, int n_samples, int n_dims, 
+                                       int n_components) {
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components) {
+        float denominator = 0.0f;
+        
+        // Calculate denominator (sum of responsibilities for this component)
+        for (int i = 0; i < n_samples; i++) {
+            denominator += responsibilities[i * n_components + k];
+        }
+        
+        // Avoid division by zero
+        if (denominator < 1e-10f) {
+            // Set to identity matrix * small constant
+            for (int i = 0; i < n_dims; i++) {
+                for (int j = 0; j < n_dims; j++) {
+                    if (i == j) {
+                        covariances[k * n_dims * n_dims + i * n_dims + j] = 1e-6f;
+                    } else {
+                        covariances[k * n_dims * n_dims + i * n_dims + j] = 0.0f;
+                    }
+                }
+            }
+            return;
+        }
+        
+        // Initialize covariance matrix to zeros
+        for (int i = 0; i < n_dims; i++) {
+            for (int j = 0; j < n_dims; j++) {
+                covariances[k * n_dims * n_dims + i * n_dims + j] = 0.0f;
+            }
+        }
+        
+        // Calculate covariance matrix
+        for (int n = 0; n < n_samples; n++) {
+            float resp = responsibilities[n * n_components + k];
+            
+            for (int i = 0; i < n_dims; i++) {
+                float diff_i = data[n * n_dims + i] - means[k * n_dims + i];
+                
+                for (int j = 0; j < n_dims; j++) {
+                    float diff_j = data[n * n_dims + j] - means[k * n_dims + j];
+                    covariances[k * n_dims * n_dims + i * n_dims + j] += resp * diff_i * diff_j;
+                }
+            }
+        }
+        
+        // Normalize by sum of responsibilities
+        for (int i = 0; i < n_dims; i++) {
+            for (int j = 0; j < n_dims; j++) {
+                covariances[k * n_dims * n_dims + i * n_dims + j] /= denominator;
+            }
+        }
+        
+        // Add small regularization to diagonal
+        for (int i = 0; i < n_dims; i++) {
+            covariances[k * n_dims * n_dims + i * n_dims + i] += 1e-6f;
+        }
+    }
+}
+
+// CUDA kernel for updating weights
+__global__ void updateWeightsKernel(float* responsibilities, float* weights, 
+                                   int n_samples, int n_components) {
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components) {
+        float sum_resp = 0.0f;
+        
+        for (int i = 0; i < n_samples; i++) {
+            sum_resp += responsibilities[i * n_components + k];
+        }
+        
+        weights[k] = sum_resp / n_samples;
+    }
+}
 
 __global__ void calculatePDFKernel(const float* X, const float* means, const float* precisions, const float* normalizers, const float* weights, float* responsibilities, int n_samples, int n_components, int n_features) {
 
@@ -137,6 +240,7 @@ class GaussianMixtureModel {
             precisions.resize(num_components);
             normalizers.resize(num_components);
             
+            #pragma omp parallel for
             for(int k = 0; k < num_components; k++) {
                 precisions[k] = covariances[k].inverse();
                 double logdet = log(covariances[k].determinant());
@@ -155,7 +259,7 @@ class GaussianMixtureModel {
     
     public:
     
-        GaussianMixtureModel(int num_components = 3, int max_iterations = 1000, double tolerance = 1e-4, bool use_cuda = true) {
+        GaussianMixtureModel(int num_components = 3, int max_iterations = 10000, double tolerance = 1e-5, bool use_cuda = true) {
             this->num_components = num_components;
             this->maxIterations = max_iterations;
             this->tolerance = tolerance;
@@ -417,6 +521,111 @@ class GaussianMixtureModel {
             
             return make_pair(responsibilities, log_likelihood);
         }
+
+        void M_STEP_CUDA(const MatrixXd& X, const MatrixXd& responsibilities) {
+            auto start_time = getTime();
+            
+            int n_samples = X.rows();
+            int n_features = X.cols();
+            
+            // Convert Eigen matrices to flat arrays
+            std::vector<float> h_X = eigenToArray<float>(X);
+            std::vector<float> h_responsibilities = eigenToArray<float>(responsibilities);
+            std::vector<float> h_means(num_components * n_features);
+            std::vector<float> h_covariances(num_components * n_features * n_features); // Full covariance matrix
+            std::vector<float> h_weights(num_components);
+            
+            // Initialize current values for means
+            for (int k = 0; k < num_components; k++) {
+                for (int j = 0; j < n_features; j++) {
+                    h_means[k * n_features + j] = static_cast<float>(means[k](j));
+                }
+            }
+            
+            // Allocate device memory
+            float *d_X, *d_responsibilities, *d_means, *d_covariances, *d_weights;
+            
+            cudaMalloc(&d_X, n_samples * n_features * sizeof(float));
+            cudaMalloc(&d_responsibilities, n_samples * num_components * sizeof(float));
+            cudaMalloc(&d_means, num_components * n_features * sizeof(float));
+            cudaMalloc(&d_covariances, num_components * n_features * n_features * sizeof(float)); // Full matrix
+            cudaMalloc(&d_weights, num_components * sizeof(float));
+            
+            // Copy data to device
+            cudaMemcpy(d_X, h_X.data(), n_samples * n_features * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_responsibilities, h_responsibilities.data(), n_samples * num_components * sizeof(float), cudaMemcpyHostToDevice);
+            cudaMemcpy(d_means, h_means.data(), num_components * n_features * sizeof(float), cudaMemcpyHostToDevice);
+            
+            // Configure kernel launch parameters
+            int threadsPerBlock = 256;
+            int blocksPerGrid = (num_components + threadsPerBlock - 1) / threadsPerBlock;
+            
+            // Launch kernels
+            updateMeansKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_X, d_responsibilities, d_means, n_samples, n_features, num_components);
+            
+            // Sync before using updated means for covariance computation
+            cudaDeviceSynchronize();
+            
+            updateCovariancesKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_X, d_responsibilities, d_means, d_covariances, n_samples, n_features, num_components);
+            
+            updateWeightsKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_responsibilities, d_weights, n_samples, num_components);
+            
+            // Copy results back to host
+            cudaMemcpy(h_means.data(), d_means, num_components * n_features * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_covariances.data(), d_covariances, num_components * n_features * n_features * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_weights.data(), d_weights, num_components * sizeof(float), cudaMemcpyDeviceToHost);
+            
+            // Update Eigen data structures
+            weights = VectorXd::Zero(num_components);
+            means.resize(num_components);
+            covariances.resize(num_components);
+            
+            for (int k = 0; k < num_components; k++) {
+                weights(k) = h_weights[k];
+                
+                means[k] = VectorXd(n_features);
+                for (int j = 0; j < n_features; j++) {
+                    means[k](j) = h_means[k * n_features + j];
+                }
+                
+                // Create full covariance matrix
+                covariances[k] = MatrixXd::Zero(n_features, n_features);
+                if (n_features == 1) {
+                    // For 1D data, just set the single value
+                    covariances[k](0, 0) = h_covariances[k * n_features];
+                } else {
+                    // For multi-dimensional data
+                    for (int i = 0; i < n_features; i++) {
+                        for (int j = 0; j < n_features; j++) {
+                            covariances[k](i, j) = h_covariances[k * n_features * n_features + i * n_features + j];
+                        }
+                    }
+                }
+                
+                // Ensure covariance is positive definite by adding small regularization if needed
+                Eigen::SelfAdjointEigenSolver<MatrixXd> eigensolver(covariances[k]);
+                if (eigensolver.eigenvalues().minCoeff() < 1e-6) {
+                    covariances[k] += MatrixXd::Identity(n_features, n_features) * 1e-6;
+                }
+            }
+            
+            // Free device memory
+            cudaFree(d_X);
+            cudaFree(d_responsibilities);
+            cudaFree(d_means);
+            cudaFree(d_covariances);
+            cudaFree(d_weights);
+            
+            // Precompute precision matrices and normalizers for PDF calculation
+            precomputePDFTerms();
+            
+            // Record timing
+            auto end_time = getTime();
+            timing["m_step"].push_back(getDuration(start_time, end_time));
+        }
     
         void M_STEP(const MatrixXd& X, const MatrixXd& responsibilities) {
             auto start_time = getTime();
@@ -428,6 +637,7 @@ class GaussianMixtureModel {
             VectorXd N_k = responsibilities.colwise().sum();
         
             /* Updating Weights */
+            #pragma omp parallel for
             for(int k = 0; k < num_components; k++) {
                 weights(k) = N_k(k) / n_samples;
             }
@@ -486,8 +696,21 @@ class GaussianMixtureModel {
             auto total_start_time = getTime();
             iterationCount = 0;
             
-            /* Random Initialization */
-            randomInitialization(X);
+            vector<double> log_likelihoods;
+
+            /* Initialization based on dimension */
+            int n_features = X.cols();
+            if (n_features == 1) {
+                cout << "Using manual initialization for 1D data" << endl;
+                manualInitialization1D(X);
+            } else {
+                cout << "Using K-means++ style initialization for multi-dimensional data" << endl;
+                randomInitialization(X);
+            }
+            // randomInitialization(X);
+
+            // Print initial parameters
+            printModelParameters("Initial");
 
             precomputePDFTerms();
             
@@ -510,9 +733,16 @@ class GaussianMixtureModel {
 
                 MatrixXd responsibilities = RL.first;
                 double logLikelihood = RL.second;
+
+                log_likelihoods.push_back(logLikelihood);
                 
                 /* M-Step */
-                M_STEP(X, responsibilities);
+                // if(use_cuda and num_components > 12) {
+                //     M_STEP_CUDA(X, responsibilities);
+                // } else {
+                //     M_STEP(X, responsibilities);
+                // }
+                M_STEP(X,responsibilities);
                 
                 /* Record iteration time */
                 auto iter_end_time = getTime();
@@ -541,6 +771,8 @@ class GaussianMixtureModel {
                 currentLogLikelihood = logLikelihood;
                 bestLogLikelihood = currentLogLikelihood;
             }
+
+            saveLogLikelihoods(log_likelihoods);
             
             // Record total fit time
             auto total_end_time = getTime();
@@ -615,6 +847,40 @@ class GaussianMixtureModel {
                 avg_pred /= timing["prediction"].size();
                 cout << "Average prediction time: " << avg_pred << " seconds" << endl;
             }
+        }
+
+        void saveLogLikelihoods(const std::vector<double>& log_likelihoods, const std::string& prefix="gmm") {
+            // Create directory if it doesn't exist
+            struct stat info;
+            if (stat("convergence_data", &info) != 0) {
+                #ifdef _WIN32
+                    system("mkdir convergence_data");
+                #else
+                    system("mkdir -p convergence_data");
+                #endif
+            }
+            
+            // Create filename based on whether CUDA was used
+            std::string algorithm_name = use_cuda ? "cuda" : "cpp";
+            std::string filename = "convergence_data/" + prefix + "_" + algorithm_name + "_log_likelihoods.csv";
+            
+            // Open file for writing
+            std::ofstream file(filename);
+            if (!file.is_open()) {
+                std::cerr << "Error: Could not open file " << filename << std::endl;
+                return;
+            }
+            
+            // Write header
+            file << "iteration,log_likelihood" << std::endl;
+            
+            // Write data
+            for (size_t i = 0; i < log_likelihoods.size(); i++) {
+                file << i << "," << log_likelihoods[i] << std::endl;
+            }
+            
+            file.close();
+            std::cout << "Log likelihoods saved to " << filename << std::endl;
         }
         
         // Save timing information to file
@@ -696,6 +962,65 @@ class GaussianMixtureModel {
             file << "Average M-step time: " << avg_m_step << " seconds" << endl;
             
             file.close();
+        }
+
+        // Add this new method to the GaussianMixtureModel class:
+
+        void manualInitialization1D(const MatrixXd& X) {
+            auto start_time = getTime();
+            
+            int n_samples = X.rows();
+            int n_features = X.cols();
+            
+            // Clear previous parameters
+            means.clear();
+            covariances.clear();
+            
+            // Hardcoded parameters for reproducibility
+            // Example: 3 components
+            std::vector<double> hardcoded_means = {1.0, -1.0, 11.0, 4.0};       // Adjust as needed
+            std::vector<double> hardcoded_stds = {1.0, 1.0, 1.0, 0.5};         // Standard deviations
+            std::vector<double> hardcoded_weights = {0.25, 0.25, 0.25, 0.25};      // Weights must sum to 1
+            
+            num_components = hardcoded_means.size();  // Ensure correct number of components
+            
+            for (int k = 0; k < num_components; ++k) {
+                // Set mean
+                VectorXd mean = VectorXd::Constant(n_features, hardcoded_means[k]);
+                means.push_back(mean);
+                
+                // Set covariance = variance = std^2
+                MatrixXd cov = MatrixXd::Constant(n_features, n_features, hardcoded_stds[k] * hardcoded_stds[k]);
+                covariances.push_back(cov);
+            }
+            
+            // Set weights
+            weights = Eigen::Map<VectorXd>(hardcoded_weights.data(), num_components);
+            
+            // Record timing
+            auto end_time = getTime();
+            timing["initialization"].push_back(getDuration(start_time, end_time));
+        }
+        
+
+        // Method to print model parameters
+        void printModelParameters(const string& stage) {
+            cout << "\n=== " << stage << " GMM Parameters ===" << endl;
+            cout << "Weights:" << endl;
+            for (int i = 0; i < num_components; i++) {
+                cout << "Component " << i << ": " << weights(i) << endl;
+            }
+            
+            cout << "Means:" << endl;
+            for (int i = 0; i < num_components; i++) {
+                cout << "Component " << i << ": " << means[i].transpose() << endl;
+            }
+            
+            cout << "Covariances:" << endl;
+            for (int i = 0; i < num_components; i++) {
+                cout << "Component " << i << ":\n" << covariances[i] << endl;
+            }
+            cout << endl;
         }
     
         VectorXd getWeights() {
@@ -841,7 +1166,7 @@ int main() {
     
     // Fit GMM model
     cout << "Fitting GMM model..." << endl;
-    GaussianMixtureModel gmm(true_components, 100, 1e-3);
+    GaussianMixtureModel gmm(true_components, 10000, 1e-4);
     
     gmm.fit(X);
     cout << "Fitting completed" << endl;

@@ -1,0 +1,63 @@
+\documentclass[conference]{IEEEtran}
+
+\IEEEoverridecommandlockouts
+
+\usepackage{setspace}
+\usepackage{enumerate}
+\usepackage{cite}
+\usepackage{times}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath}
+
+\begin{document}
+\title{Hybrid Implementation of Expectation Maximization Algorithm using CUDA and OpenMP for Gaussian Mixture Models}
+
+\author{
+\IEEEauthorblockN{
+Ayush Raina
+}
+\IEEEauthorblockA{Supercomputer~Education~and~Research~Centre\\
+Indian Institute of Science, Bangalore, India\\
+ayushraina@iisc.ac.in}
+}
+
+\maketitle
+
+\begin{abstract}
+    The Expectation-Maximization (EM) algorithm for Gaussian Mixture Models (GMMs) is computationally intensive, especially for large datasets with high dimensionality. This paper presents a hybrid parallel implementation that leverages both a single GPU (using CUDA) and multicore CPU (using OpenMP) to accelerate the algorithm. Our approach partitions the workload by mapping the computationally intensive E-step to the GPU's massive parallelism while utilizing OpenMP for the parameter update M-step on the CPU. We analyze the computational characteristics of both steps and design optimized CUDA kernels for probability density computations and responsibility calculations, along with efficient OpenMP parallelization strategies for parameter updates. Experimental results demonstrate that our hybrid approach achieves significant speedup compared to serial implementations, with performance gains increasing with dataset size and model complexity. We also provide a comparative analysis of pure GPU, pure multicore CPU, and hybrid implementations, showing that our hybrid approach effectively balances computation and data movement to achieve superior performance on modern heterogeneous computing platforms.
+\end{abstract}
+
+\section{Introduction}
+\label{intro}
+
+This is for introduction
+
+\section{Related Work}
+
+This is for literature survey. e.g. The paper by Ellsworth et al.\cite{ellsworth-concurrentvis-tvcg2006} discusses...The paper by Yu et al.\cite{yu-parvis-sc2004} had proposed..
+
+\section{Methodology}
+
+The third section will contain the overall methodology. You may choose to have a specific title for the section instead of "Methodology''. For example, "A Divide-and-Conquer Algorithm for QR Factorization''.  You may also organize methodology section as multiple sections with different titles, if necessary, instead of a single section.
+
+Try to arrange the sections into multiple subsections with clear organization, using \textbackslash subsection\{\}.
+
+Have figures and tables. Search in google for latex help on these.
+
+\section{Experiments and Results}
+
+\subsection{Experiment Setup}
+
+\subsection{Results}
+
+\section{Conclusions}
+
+Have one para for conclusions and one para for future work.
+
+\bibliographystyle{IEEEtran}
+\bibliography{template}
+
+\end{document}
+

@@ -1,18 +1,18 @@
 === C++ GMM Timing Summary ===
-Dataset size: 1000000 points, 2 dimensions
-Components: 3
+Dataset size: 1000000 points, 1 dimensions
+Components: 4
 
 --- Overall Performance ---
-Total runtime: 4.64462 seconds
-Total iterations: 91
-Average iteration time: 0.0507699 seconds
+Total runtime: 54.3307 seconds
+Total iterations: 952
+Average iteration time: 0.054343 seconds
 Prediction time: 0 seconds
 
 --- Component Breakdown ---
-Initialization: 0.00970001 seconds
-E-step total: 1.02158 seconds (21.9949%)
-M-step total: 3.30953 seconds (71.2552%)
+Initialization: 1.438e-06 seconds
+E-step total: 17.3461 seconds (31.9269%)
+M-step total: 23.2263 seconds (42.7498%)
 
 --- Per Iteration Statistics ---
-Average E-step time: 0.0112262 seconds
-Average M-step time: 0.0363685 seconds
+Average E-step time: 0.0182207 seconds
+Average M-step time: 0.0243974 seconds

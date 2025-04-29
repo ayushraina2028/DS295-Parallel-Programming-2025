@@ -1,0 +1,18 @@
+=== Python GMM Timing Summary ===
+Dataset size: 10000 points, 2 dimensions
+Components: 4
+
+--- Overall Performance ---
+Total runtime: 0.4179 seconds
+Total iterations: 282
+Average iteration time: 0.0015 seconds
+Prediction time: 0.0012 seconds
+
+--- Component Breakdown ---
+Initialization: 0.0005 seconds
+E-step total: 0.3014 seconds (72.12%)
+M-step total: 0.1159 seconds (27.73%)
+
+--- Per Iteration Statistics ---
+Average E-step time: 0.0011 seconds
+Average M-step time: 0.0004 seconds
