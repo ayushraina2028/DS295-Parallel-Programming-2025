@@ -1,0 +1,17 @@
+# Fdb version 4
+["pdflatex"] 1745972112.6379 "/home/ayushraina/Desktop/6thSemester/ParallelProgramming/report.tex" "report.pdf" "report" 1745972112.78947 2
+  "/etc/texmf/web2c/texmf.cnf" 1738862817.36871 475 c0e671620eb5563b2130f56340a5fde8 ""
+  "/home/ayushraina/Desktop/6thSemester/ParallelProgramming/report.tex" 1745972112.34246 18200 af20797a9e4dc2a6553055aa966b5dd8 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/article.cls" 1705352648 20144 147463a6a579f4597269ef9565205cfe ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo" 1705352648 8448 dbc0dbf4156c0bb9ba01a1c685d3bad0 ""
+  "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
+  "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1738862880 8215219 3e292b24a6a264717b3eacd28077f0ec ""
+  "cvpr.sty" 0 -1 0 ""
+  "report.aux" 1745972112.63647 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "report.tex" 1745972112.34246 18200 af20797a9e4dc2a6553055aa966b5dd8 ""
+  (generated)
+  "report.aux"
+  "report.log"
+  "report.pdf"
+  (rewritten before read)

@@ -154,40 +154,6 @@ class GaussianMixtureModel {
             auto end_time = getTime();
             timing["initialization"].push_back(getDuration(start_time, end_time));
         }
-
-        void saveLogLikelihoods(const std::vector<double>& log_likelihoods, const std::string& prefix="gmm") {
-            // Create directory if it doesn't exist
-            struct stat info;
-            if (stat("convergence_data", &info) != 0) {
-                #ifdef _WIN32
-                    system("mkdir convergence_data");
-                #else
-                    system("mkdir -p convergence_data");
-                #endif
-            }
-            
-            // Create filename based on whether CUDA was used
-            std::string algorithm_name = "sequential_cpp";
-            std::string filename = "convergence_data/" + prefix + "_" + algorithm_name + "_log_likelihoods.csv";
-            
-            // Open file for writing
-            std::ofstream file(filename);
-            if (!file.is_open()) {
-                std::cerr << "Error: Could not open file " << filename << std::endl;
-                return;
-            }
-            
-            // Write header
-            file << "iteration,log_likelihood" << std::endl;
-            
-            // Write data
-            for (size_t i = 0; i < log_likelihoods.size(); i++) {
-                file << i << "," << log_likelihoods[i] << std::endl;
-            }
-            
-            file.close();
-            std::cout << "Log likelihoods saved to " << filename << std::endl;
-        }
     
         // In GaussianMixtureModel::E_STEP method
         pair<MatrixXd, double> E_STEP(const MatrixXd& X) {
@@ -293,12 +259,47 @@ class GaussianMixtureModel {
             auto end_time = getTime();
             timing["m_step"].push_back(getDuration(start_time, end_time));
         }
+
+        void saveLogLikelihoods(const std::vector<double>& log_likelihoods, const std::string& prefix="gmm") {
+            // Create directory if it doesn't exist
+            struct stat info;
+            if (stat("convergence_data", &info) != 0) {
+                #ifdef _WIN32
+                    system("mkdir convergence_data");
+                #else
+                    system("mkdir -p convergence_data");
+                #endif
+            }
+            
+            // Create filename based on whether CUDA was used
+            std::string algorithm_name = "openmp_cpp";
+            std::string filename = "convergence_data/" + prefix + "_" + algorithm_name + "_log_likelihoods.csv";
+            
+            // Open file for writing
+            std::ofstream file(filename);
+            if (!file.is_open()) {
+                std::cerr << "Error: Could not open file " << filename << std::endl;
+                return;
+            }
+            
+            // Write header
+            file << "iteration,log_likelihood" << std::endl;
+            
+            // Write data
+            for (size_t i = 0; i < log_likelihoods.size(); i++) {
+                file << i << "," << log_likelihoods[i] << std::endl;
+            }
+            
+            file.close();
+            std::cout << "Log likelihoods saved to " << filename << std::endl;
+        }
+    
     
         void fit(const MatrixXd& X) {
             auto total_start_time = getTime();
             iterationCount = 0;
 
-            vector<double> log_likelihoods;
+            vector<double> log_likelihood;
             
             /* Random Initialization */
             randomInitialization(X);
@@ -316,7 +317,7 @@ class GaussianMixtureModel {
                 MatrixXd responsibilities = RL.first;
                 double logLikelihood = RL.second;
 
-                log_likelihoods.push_back(logLikelihood);
+                log_likelihood.push_back(logLikelihood);
                 
                 /* M-Step */
                 M_STEP(X, responsibilities);
@@ -348,9 +349,9 @@ class GaussianMixtureModel {
                 currentLogLikelihood = logLikelihood;
                 bestLogLikelihood = currentLogLikelihood;
             }
-
-            saveLogLikelihoods(log_likelihoods);
             
+            saveLogLikelihoods(log_likelihood);
+
             // Record total fit time
             auto total_end_time = getTime();
             timing["total_fit"][0] = getDuration(total_start_time, total_end_time);
@@ -659,8 +660,8 @@ int main() {
     gmm.printTimingStats();
     
     // Save timing information to file
-    gmm.saveTimingToFile("timing_results/sequential_cpp_gmm_timing_summary.txt", n_samples, n_features);
-    cout << "Timing information saved to timing_results/sequential_cpp_gmm_timing_summary.txt" << endl;
+    gmm.saveTimingToFile("timing_results/openmp_cpp_gmm_timing_summary.txt", n_samples, n_features);
+    cout << "Timing information saved to timing_results/openmp_cpp_gmm_timing_summary.txt" << endl;
     
     // Predict cluster assignments
     cout << "\nPredicting cluster assignments..." << endl;

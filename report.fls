@@ -1,0 +1,12 @@
+PWD /home/ayushraina/Desktop/6thSemester/ParallelProgramming
+INPUT /etc/texmf/web2c/texmf.cnf
+INPUT /usr/share/texmf/web2c/texmf.cnf
+INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
+INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
+INPUT /home/ayushraina/Desktop/6thSemester/ParallelProgramming/report.tex
+OUTPUT report.log
+INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+INPUT /usr/share/texlive/texmf-dist/tex/latex/base/size10.clo

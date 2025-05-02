@@ -258,6 +258,117 @@ __global__ void calculateLogLikelihoodKernel(
     }
 }
 
+// Kernel to compute N_k (sum of responsibilities per component)
+__global__ void computeNkKernel(float* responsibilities, float* N_k,
+                               int n_samples, int n_components) {
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components) {
+        float sum = 0.0f;
+        for (int i = 0; i < n_samples; i++) {
+            sum += responsibilities[i * n_components + k];
+        }
+        N_k[k] = sum;
+    }
+}
+
+// Optimized means kernel that uses pre-computed N_k
+__global__ void updateMeansOptimizedKernel(
+    float* data, float* responsibilities, float* means, float* N_k,
+    int n_samples, int n_dims, int n_components) {
+    
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components && N_k[k] > 1e-10f) {
+        // For each dimension
+        for (int d = 0; d < n_dims; d++) {
+            float numerator = 0.0f;
+            
+            // Compute weighted sum for this component and dimension
+            for (int i = 0; i < n_samples; i++) {
+                numerator += responsibilities[i * n_components + k] * data[i * n_dims + d];
+            }
+            
+            // Division by N_k (safe since we check N_k > threshold)
+            means[k * n_dims + d] = numerator / N_k[k];
+        }
+    } else if (k < n_components) {
+        // If component has negligible weight, set mean to overall data mean
+        // This is a fallback to avoid numerical issues
+        for (int d = 0; d < n_dims; d++) {
+            float data_mean = 0.0f;
+            for (int i = 0; i < n_samples; i++) {
+                data_mean += data[i * n_dims + d];
+            }
+            means[k * n_dims + d] = data_mean / n_samples;
+        }
+    }
+}
+
+// Optimized covariance kernel that uses pre-computed N_k
+__global__ void updateCovariancesOptimizedKernel(
+    float* data, float* responsibilities, float* means, 
+    float* covariances, float* N_k,
+    int n_samples, int n_dims, int n_components) {
+    
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components && N_k[k] > 1e-10f) {
+        // For each element in the covariance matrix
+        for (int i = 0; i < n_dims; i++) {
+            for (int j = 0; j <= i; j++) { // Only compute lower triangle due to symmetry
+                float cov_sum = 0.0f;
+                
+                for (int n = 0; n < n_samples; n++) {
+                    float resp = responsibilities[n * n_components + k];
+                    float diff_i = data[n * n_dims + i] - means[k * n_dims + i];
+                    float diff_j = data[n * n_dims + j] - means[k * n_dims + j];
+                    
+                    cov_sum += resp * diff_i * diff_j;
+                }
+                
+                // Normalize by sum of responsibilities
+                float cov_val = cov_sum / N_k[k];
+                
+                // Store in both locations due to symmetry
+                covariances[k * n_dims * n_dims + i * n_dims + j] = cov_val;
+                if (i != j) { // Avoid duplicate write for diagonal
+                    covariances[k * n_dims * n_dims + j * n_dims + i] = cov_val;
+                }
+            }
+        }
+        
+        // Add small regularization to diagonal
+        for (int i = 0; i < n_dims; i++) {
+            covariances[k * n_dims * n_dims + i * n_dims + i] += 1e-6f * (1.0f + 0.01f * n_dims);
+        }
+    } else if (k < n_components) {
+        // For components with negligible weight, set to identity * regularization
+        for (int i = 0; i < n_dims; i++) {
+            for (int j = 0; j < n_dims; j++) {
+                covariances[k * n_dims * n_dims + i * n_dims + j] = (i == j) ? 1.0f : 0.0f;
+            }
+        }
+    }
+}
+
+// Optimized weights kernel that uses pre-computed N_k
+__global__ void updateWeightsOptimizedKernel(
+    float* N_k, float* weights, int n_samples, int n_components) {
+    
+    int k = blockIdx.x * blockDim.x + threadIdx.x;
+    
+    if (k < n_components) {
+        // Simple normalization of N_k
+        weights[k] = N_k[k] / n_samples;
+        
+        // Ensure positive weight with minimum threshold
+        if (weights[k] < 1e-6f) {
+            weights[k] = 1e-6f;
+        }
+    }
+}
+
 high_resolution_clock::time_point getTime() {
     return high_resolution_clock::now();
 }
@@ -391,8 +502,11 @@ class GaussianMixtureModel {
             int n_features = X.cols();
             
             // K-means++ style initialization for means
-            random_device RD;
-            mt19937 gen(RD());
+            // Use static random device to get a true random seed just once
+            static random_device RD;
+            // Create a new seed each time using current time + random device
+            unsigned seed = static_cast<unsigned>(chrono::high_resolution_clock::now().time_since_epoch().count()) + RD();
+            mt19937 gen(seed);
             uniform_int_distribution<int> init_dist(0, n_samples - 1);
             uniform_real_distribution<double> prob_dist(0.0, 1.0);
             
@@ -599,11 +713,14 @@ class GaussianMixtureModel {
             // Convert Eigen matrices to flat arrays
             std::vector<float> h_X = eigenToArray<float>(X);
             std::vector<float> h_responsibilities = eigenToArray<float>(responsibilities);
-            std::vector<float> h_means(num_components * n_features);
-            std::vector<float> h_covariances(num_components * n_features * n_features); // Full covariance matrix
-            std::vector<float> h_weights(num_components);
             
-            // Initialize current values for means
+            // Allocate host memory for results
+            std::vector<float> h_means(num_components * n_features);
+            std::vector<float> h_covariances(num_components * n_features * n_features);
+            std::vector<float> h_weights(num_components);
+            std::vector<float> h_N_k(num_components); // Store component sums for efficiency
+            
+            // Initialize current values for means (needed for covariance calculation)
             for (int k = 0; k < num_components; k++) {
                 for (int j = 0; j < n_features; j++) {
                     h_means[k * n_features + j] = static_cast<float>(means[k](j));
@@ -611,72 +728,89 @@ class GaussianMixtureModel {
             }
             
             // Allocate device memory
-            float *d_X, *d_responsibilities, *d_means, *d_covariances, *d_weights;
+            float *d_X, *d_responsibilities, *d_means, *d_covariances, *d_weights, *d_N_k;
             
             cudaMalloc(&d_X, n_samples * n_features * sizeof(float));
             cudaMalloc(&d_responsibilities, n_samples * num_components * sizeof(float));
             cudaMalloc(&d_means, num_components * n_features * sizeof(float));
-            cudaMalloc(&d_covariances, num_components * n_features * n_features * sizeof(float)); // Full matrix
+            cudaMalloc(&d_covariances, num_components * n_features * n_features * sizeof(float));
             cudaMalloc(&d_weights, num_components * sizeof(float));
+            cudaMalloc(&d_N_k, num_components * sizeof(float));
             
             // Copy data to device
             cudaMemcpy(d_X, h_X.data(), n_samples * n_features * sizeof(float), cudaMemcpyHostToDevice);
             cudaMemcpy(d_responsibilities, h_responsibilities.data(), n_samples * num_components * sizeof(float), cudaMemcpyHostToDevice);
-            cudaMemcpy(d_means, h_means.data(), num_components * n_features * sizeof(float), cudaMemcpyHostToDevice);
             
-            // Configure kernel launch parameters
+            // Configure kernel launch parameters - using more threads for better occupancy
             int threadsPerBlock = 256;
             int blocksPerGrid = (num_components + threadsPerBlock - 1) / threadsPerBlock;
             
-            // Launch kernels
-            updateMeansKernel<<<blocksPerGrid, threadsPerBlock>>>(
-                d_X, d_responsibilities, d_means, n_samples, n_features, num_components);
+            // First compute N_k (sum of responsibilities per component) - add a separate kernel for this
+            // This avoids redundant calculations in multiple kernels
+            cudaMemset(d_N_k, 0, num_components * sizeof(float));
+            computeNkKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_responsibilities, d_N_k, n_samples, num_components);
+            
+            // Launch optimized means kernel that uses N_k
+            cudaMemset(d_means, 0, num_components * n_features * sizeof(float));
+            updateMeansOptimizedKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_X, d_responsibilities, d_means, d_N_k, n_samples, n_features, num_components);
             
             // Sync before using updated means for covariance computation
             cudaDeviceSynchronize();
             
-            updateCovariancesKernel<<<blocksPerGrid, threadsPerBlock>>>(
-                d_X, d_responsibilities, d_means, d_covariances, n_samples, n_features, num_components);
+            // Copy the means to host for updating the Eigen structures later
+            cudaMemcpy(h_means.data(), d_means, num_components * n_features * sizeof(float), cudaMemcpyDeviceToHost);
             
-            updateWeightsKernel<<<blocksPerGrid, threadsPerBlock>>>(
-                d_responsibilities, d_weights, n_samples, num_components);
+            // Launch covariances kernel with the updated means and N_k
+            cudaMemset(d_covariances, 0, num_components * n_features * n_features * sizeof(float));
+            updateCovariancesOptimizedKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_X, d_responsibilities, d_means, d_covariances, d_N_k, 
+                n_samples, n_features, num_components);
+            
+            // Launch weights kernel that uses N_k
+            updateWeightsOptimizedKernel<<<blocksPerGrid, threadsPerBlock>>>(
+                d_N_k, d_weights, n_samples, num_components);
             
             // Copy results back to host
-            cudaMemcpy(h_means.data(), d_means, num_components * n_features * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_covariances.data(), d_covariances, num_components * n_features * n_features * sizeof(float), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_weights.data(), d_weights, num_components * sizeof(float), cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_N_k.data(), d_N_k, num_components * sizeof(float), cudaMemcpyDeviceToHost);
             
-            // Update Eigen data structures
+            // Update Eigen data structures with numerical stability checks
             weights = VectorXd::Zero(num_components);
             means.resize(num_components);
             covariances.resize(num_components);
             
+            #pragma omp parallel for
             for (int k = 0; k < num_components; k++) {
+                // Update weights
                 weights(k) = h_weights[k];
                 
+                // Update means
                 means[k] = VectorXd(n_features);
                 for (int j = 0; j < n_features; j++) {
                     means[k](j) = h_means[k * n_features + j];
                 }
                 
-                // Create full covariance matrix
+                // Update covariances with enhanced numerical stability
                 covariances[k] = MatrixXd::Zero(n_features, n_features);
-                if (n_features == 1) {
-                    // For 1D data, just set the single value
-                    covariances[k](0, 0) = h_covariances[k * n_features];
-                } else {
-                    // For multi-dimensional data
+                
+                // Check if component has sufficient weight
+                if (h_N_k[k] > 1e-10f) {
                     for (int i = 0; i < n_features; i++) {
                         for (int j = 0; j < n_features; j++) {
                             covariances[k](i, j) = h_covariances[k * n_features * n_features + i * n_features + j];
                         }
                     }
-                }
-                
-                // Ensure covariance is positive definite by adding small regularization if needed
-                Eigen::SelfAdjointEigenSolver<MatrixXd> eigensolver(covariances[k]);
-                if (eigensolver.eigenvalues().minCoeff() < 1e-6) {
-                    covariances[k] += MatrixXd::Identity(n_features, n_features) * 1e-6;
+                    
+                    // Add regularization based on dimensionality
+                    double reg = 1e-6 * (1.0 + 0.01 * n_features);
+                    covariances[k] += MatrixXd::Identity(n_features, n_features) * reg;
+                } else {
+                    // For components with negligible weight, use prior covariance
+                    covariances[k] = MatrixXd::Identity(n_features, n_features) * 
+                                    (covariances[k].trace() / n_features + 1e-3);
                 }
             }
             
@@ -686,6 +820,7 @@ class GaussianMixtureModel {
             cudaFree(d_means);
             cudaFree(d_covariances);
             cudaFree(d_weights);
+            cudaFree(d_N_k);
             
             // Precompute precision matrices and normalizers for PDF calculation
             precomputePDFTerms();
@@ -963,13 +1098,15 @@ class GaussianMixtureModel {
             int n_samples = X.rows();
             
             // Choose initialization strategy
-            if (n_features == 1) {
-                cout << "Using manual initialization for 1D data" << endl;
-                manualInitialization1D(X);
-            } else {
-                cout << "Using K-means++ style initialization for multi-dimensional data" << endl;
-                randomInitialization(X);
-            }
+            // if (n_features == 1) {
+            //     cout << "Using manual initialization for 1D data" << endl;
+            //     manualInitialization1D(X);
+            // } else {
+            //     cout << "Using K-means++ style initialization for multi-dimensional data" << endl;
+            //     randomInitialization(X);
+            // }
+            randomInitialization(X);
+            printModelParameters("Initial");
             
             // Precompute PDF terms with enhanced error checking
             try {
@@ -1060,6 +1197,7 @@ class GaussianMixtureModel {
                 /* M-Step */
                 try {
                     // Use the most appropriate method
+                    // M_STEP_CUDA(X, responsibilities);
                     M_STEP(X, responsibilities);
                     
                     // Apply additional regularization and check condition numbers
@@ -1102,11 +1240,6 @@ class GaussianMixtureModel {
                 
                 // Print progress
                 cout << "Iteration " << iteration << ", Log Likelihood: " << logLikelihood;
-                
-                // Only print component info occasionally for high-dimensional problems
-                if(n_features < 5 || iteration % 10 == 0) {
-                    cout << ", Components: " << num_components;
-                }
                 
                 cout << endl;
                 
@@ -1412,7 +1545,7 @@ class GaussianMixtureModel {
             
             // Hardcoded parameters for reproducibility
             // Example: 3 components
-            std::vector<double> hardcoded_means = {1.0, -1.0, 11.0, 4.0};       // Adjust as needed
+            std::vector<double> hardcoded_means = {-1.0, -3.0, 11.0, 4.0};       // Adjust as needed
             std::vector<double> hardcoded_stds = {1.0, 1.0, 1.0, 0.5};         // Standard deviations
             std::vector<double> hardcoded_weights = {0.25, 0.25, 0.25, 0.25};      // Weights must sum to 1
             
@@ -1600,7 +1733,7 @@ int main() {
     
     // Fit GMM model
     cout << "Fitting GMM model..." << endl;
-    GaussianMixtureModel gmm(true_components, 10000, 1e-4);
+    GaussianMixtureModel gmm(true_components, 10000, 1e-6);
     
     gmm.fit(X);
     cout << "Fitting completed" << endl;

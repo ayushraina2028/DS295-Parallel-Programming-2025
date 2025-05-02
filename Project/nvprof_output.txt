@@ -1,0 +1,125 @@
+==605374== NVPROF is profiling process 605374, command: ./em_cuda
+Reading data from CSV files...
+Data loaded: 150 samples with 4 features
+Number of clusters: 3
+Fitting GMM model...
+
+=== Initial GMM Parameters ===
+Weights:
+Component 0: 0.333333
+Component 1: 0.333333
+Component 2: 0.333333
+Means:
+Component 0: -1.02185 0.788808 -1.28339 -1.31544
+Component 1: -0.0525061  -0.592373   0.762758    1.58046
+Component 2:     1.038 0.0982173  0.364896  0.264142
+Covariances:
+Component 0:
+  1.00671 -0.118359  0.877604  0.823431
+-0.118359   1.00671 -0.431316 -0.368583
+ 0.877604 -0.431316   1.00671  0.969328
+ 0.823431 -0.368583  0.969328   1.00671
+Component 1:
+  1.00671 -0.118359  0.877604  0.823431
+-0.118359   1.00671 -0.431316 -0.368583
+ 0.877604 -0.431316   1.00671  0.969328
+ 0.823431 -0.368583  0.969328   1.00671
+Component 2:
+  1.00671 -0.118359  0.877604  0.823431
+-0.118359   1.00671 -0.431316 -0.368583
+ 0.877604 -0.431316   1.00671  0.969328
+ 0.823431 -0.368583  0.969328   1.00671
+
+Iteration 0, Log Likelihood: -602.794
+Iteration 1, Log Likelihood: -434.905
+Iteration 2, Log Likelihood: -408.841
+Iteration 3, Log Likelihood: -394.629
+Iteration 4, Log Likelihood: -386.957
+Iteration 5, Log Likelihood: -378.762
+Iteration 6, Log Likelihood: -365.984
+Iteration 7, Log Likelihood: -337.626
+Iteration 8, Log Likelihood: -298.265
+Iteration 9, Log Likelihood: -297.627
+Iteration 10, Log Likelihood: -297.457
+Iteration 11, Log Likelihood: -297.376
+Iteration 12, Log Likelihood: -297.336
+Iteration 13, Log Likelihood: -297.317
+Iteration 14, Log Likelihood: -297.307
+Iteration 15, Log Likelihood: -297.303
+Iteration 16, Log Likelihood: -297.3
+Iteration 17, Log Likelihood: -297.299
+Iteration 18, Log Likelihood: -297.299
+Converged at iteration 19
+Log likelihoods saved to convergence_data/gmm_cuda_log_likelihoods.csv
+Fitting completed
+=== GMM Timing Statistics ===
+Total fit time: 0.107441 seconds
+Average initialization time: 2.6792e-05 seconds
+Average E-step time: 0.00515722 seconds
+Average M-step time: 0.000132241 seconds
+Average iteration time: 0.00531802 seconds
+Total iterations: 20
+Timing information saved to timing_results/cpp_gmm_timing_summary.txt
+
+Predicting cluster assignments...
+Prediction completed
+
+Fitted GMM Parameters:
+Log-likelihood: -297.299
+
+Weights:
+Component 0: 0.333288
+Component 1: 0.229113
+Component 2: 0.437599
+
+Means:
+Component 0:  -1.0145 0.853612 -1.30497  -1.2549
+Component 1:  0.655172 -0.148091  0.902253   1.19629
+Component 2:  0.429643 -0.572601  0.521517  0.329432
+
+Covariances:
+Component 0:
+  0.179743   0.271026  0.0110322  0.0161554
+  0.271026   0.746385  0.0149691  0.0276391
+ 0.0110322  0.0149691  0.0105482 0.00445154
+ 0.0161554  0.0276391 0.00445154  0.0198605
+Component 1:
+ 0.402954  0.215643  0.111012  0.111175
+ 0.215643  0.389564 0.0870442  0.129569
+ 0.111012 0.0870442 0.0550273 0.0547904
+ 0.111175  0.129569 0.0547904  0.102848
+Component 2:
+0.746405 0.368379 0.383726  0.27712
+0.368379 0.620733 0.180945 0.171687
+0.383726 0.180945 0.255418 0.184082
+ 0.27712 0.171687 0.184082 0.161298
+
+Clustering accuracy: 88.6667%
+
+Samples per cluster:
+Cluster 0: 50 samples
+Cluster 1: 35 samples
+Cluster 2: 65 samples
+
+Model parameters saved to gmm_model_parameters_cpp.csv
+Cluster assignments saved to gmm_predictions_cpp.csv
+GMM Testing completed successfully!
+==605374== Profiling application: ./em_cuda
+==605374== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   39.26%  124.32us        20  6.2160us  5.9840us  6.6240us  calculateLogProbsKernel(float const *, float const *, float const *, float const *, float const *, float*, int, int, int)
+                   27.04%  85.637us       100     856ns     735ns  1.5680us  [CUDA memcpy HtoD]
+                   20.14%  63.777us        20  3.1880us  3.0720us  3.3600us  calculateResponsibilitiesKernel(float*, float*, float*, int, int)
+                   13.55%  42.912us        40  1.0720us  1.0230us  1.5350us  [CUDA memcpy DtoH]
+      API calls:   96.47%  74.063ms       160  462.90us  1.1070us  72.781ms  cudaMalloc
+                    1.29%  988.33us       140  7.0590us  2.8890us  18.583us  cudaMemcpy
+                    1.24%  950.74us       160  5.9420us     927ns  52.123us  cudaFree
+                    0.80%  612.13us        40  15.303us  1.8760us  400.14us  cudaLaunchKernel
+                    0.17%  130.57us       101  1.2920us     152ns  51.185us  cuDeviceGetAttribute
+                    0.01%  11.189us         1  11.189us  11.189us  11.189us  cuDeviceGetName
+                    0.01%  5.5850us         1  5.5850us  5.5850us  5.5850us  cuDeviceGetPCIBusId
+                    0.01%  5.1140us         1  5.1140us  5.1140us  5.1140us  cuDeviceTotalMem
+                    0.00%  1.9680us         3     656ns     237ns  1.3710us  cuDeviceGetCount
+                    0.00%     832ns         2     416ns     182ns     650ns  cuDeviceGet
+                    0.00%     546ns         1     546ns     546ns     546ns  cuModuleGetLoadingMode
+                    0.00%     270ns         1     270ns     270ns     270ns  cuDeviceGetUuid
