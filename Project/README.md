@@ -236,11 +236,11 @@ To reproduce the results shown above:
 4. Add tests for new functionality
 5. Submit a pull request
 
-## License
+<!-- ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details. -->
 
-## Citation
+<!-- ## Citation
 
 If you use this code in your research, please cite:
 
@@ -252,7 +252,7 @@ If you use this code in your research, please cite:
   institution={Supercomputer Education and Research Centre, Indian Institute of Science},
   url={[Repository URL]}
 }
-```
+``` -->
 
 ## Acknowledgments
 
