@@ -1,32 +1,46 @@
 \relax 
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
 \newlabel{intro}{{I}{1}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {II}Methodology}{1}{}\protected@file@percent }
-\newlabel{methodology}{{II}{1}{}{}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}GMM Background and EM Algorithm}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Challenges in GMM Parameter Estimation}{1}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-B}}Contributions}{2}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Methodology}{2}{}\protected@file@percent }
+\newlabel{methodology}{{II}{2}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}GMM Background and EM Algorithm}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Algorithm Overview}{2}{}\protected@file@percent }
 \@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Hybrid CUDA-OpenMP EM Algorithm for GMMs}}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-C}}E-step: GPU Implementation with Log-Space Computation}{2}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}1}Log-Space Computation for Numerical Stability}{2}{}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces CUDA Kernel: Calculate Responsibilities}}{2}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}2}GPU Memory Access Optimization}{2}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}3}CUDA Kernel Configuration}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}2}E-step CUDA Kernel Design}{2}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces CUDA Kernel: Calculate Log Probabilities}}{3}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces CUDA Kernel: Calculate Responsibilities}}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}3}GPU Memory Access Optimization}{3}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {II-C}4}Advanced Thread Block Configuration}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-D}}M-step: OpenMP Implementation}{3}{}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces M-step with OpenMP Parallelization}}{3}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-E}}Precomputation of Precision Terms}{3}{}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces Precomputation of Precision Terms}}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-F}}Implementation Details}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {III}Experiments and Results}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Experiment 1: Synthetic Data and Performance Evaluation}{3}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Execution times and Speedups over sequential implementation are shown.}}{3}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces M-step with OpenMP Parallelization}}{4}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces Precomputation of Precision Terms}}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {III}Numerical Stability Techniques}{4}{}\protected@file@percent }
+\newlabel{numerical_stability}{{III}{4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Adaptive Covariance Regularization}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Eigenvalue-Based Conditioning}{4}{}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Eigenvalue-Based Covariance Conditioning}}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Log-Space Computation with Careful Implementation}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Implementation Details}{4}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Experiments and Results}{4}{}\protected@file@percent }
+\newlabel{Experiments and Results}{{V}{4}{}{}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}Experiment 1: Synthetic Data and Performance Evaluation}{4}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Execution times and Speedups over sequential implementation are shown.}}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Computational Complexity Analysis}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-C}}Experiment 2: Comparison with Azizi's Paper}{5}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Left: Log-likelihood when starting with the initial parameters from the paper. Right: Log-likelihood when starting with random parameters.}}{5}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Convergence comparison with optimized Python libraries using different initialization strategies.}}{5}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-D}}Experiment 3: Testing our Hybrid Algorithm on IRIS Dataset}{5}{}\protected@file@percent }
 \bibstyle{IEEEtran}
 \bibcite{azizi2023parallel}{1}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Experiment 2: Comparison with Azizi's Paper}{4}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Left: Log-likelihood when starting with the initial parameters from the paper. Right: Log-likelihood when starting with random parameters.}}{4}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Top row shows the true class labels across three feature pairs. Bottom row displays the fitted GMM clusters with corresponding density contours. The close match between true labels and model predictions demonstrates the algorithm's effectiveness at recovering the natural clusters in the data.}}{4}{}\protected@file@percent }
-\newlabel{fig:iris_results}{{3}{4}{}{}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Conclusion and Future Work}{4}{}\protected@file@percent }
-\newlabel{conclusion}{{IV}{4}{}{}{}}
 \bibcite{kumar2009fast}{2}
-\@writefile{toc}{\contentsline {section}{References}{5}{}\protected@file@percent }
-\gdef \@abspage@last{5}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Top row shows the true class labels across three feature pairs. Bottom row displays the fitted GMM clusters with corresponding density contours. The close match between true labels and model predictions demonstrates the algorithm's effectiveness at recovering the natural clusters in the data.}}{6}{}\protected@file@percent }
+\newlabel{fig:iris_results}{{4}{6}{}{}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion and Future Work}{6}{}\protected@file@percent }
+\newlabel{conclusion}{{VI}{6}{}{}{}}
+\@writefile{toc}{\contentsline {section}{References}{6}{}\protected@file@percent }
+\gdef \@abspage@last{6}

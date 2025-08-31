@@ -64,9 +64,9 @@ high_resolution_clock::time_point getTime() {
 }
 
 int main() {
-    int N = 1024;
-    int K = 1024;
-    int M = 1024;
+    int N = 1000;
+    int K = 1000;
+    int M = 1000;
 
     size_t sizeA = N*K*sizeof(int);
     size_t sizeB = K*M*sizeof(int);
@@ -93,20 +93,20 @@ int main() {
     auto e = getTime();
     
 
-    nanoseconds durationGPU = duration_cast<nanoseconds> (e - s);
-    cout << "Time taken for CUDA Kernel: " << durationGPU.count() << endl;
+    milliseconds durationGPU = duration_cast<milliseconds> (e - s);
+    cout << "Time taken for CUDA Kernel: " << durationGPU.count() << " milliseconds" << endl;
 
     CUDA_CHECK_ERROR(cudaMemcpy(C,dC,sizeC,cudaMemcpyDeviceToHost));
     CUDA_CHECK_ERROR(cudaFree(dA)); CUDA_CHECK_ERROR(cudaFree(dB)); CUDA_CHECK_ERROR(cudaFree(dC));
 
-    int* C_CPU = (int*)malloc(sizeC);
+    // int* C_CPU = (int*)malloc(sizeC);
 
-    s = getTime();
-    MatrixMultOnCPU(A,B,C_CPU,N,K,M);
-    e = getTime();
+    // s = getTime();
+    // MatrixMultOnCPU(A,B,C_CPU,N,K,M);
+    // e = getTime();
 
-    nanoseconds durationCPU = duration_cast<nanoseconds> (e - s);
-    cout << "Time taken for CPU: " << durationCPU.count() << endl;
+    // nanoseconds durationCPU = duration_cast<nanoseconds> (e - s);
+    // cout << "Time taken for CPU: " << durationCPU.count() << endl;
 
     // cout << "Matrix A: " << endl; display(A,N,K);
     // cout << "Matrix B: " << endl; display(B,K,M);
@@ -114,7 +114,7 @@ int main() {
     // cout << "Matrix C from GPU: " << endl; display(C,N,M);
     // cout << "Matrix C from CPU: " << endl; display(C_CPU,N,M);
 
-    cout << "SpeedUP: " << (float) (durationCPU.count()) / (durationGPU.count() * 1.0) << endl; // Around 47 times faster
+    // cout << "SpeedUP: " << (float) (durationCPU.count()) / (durationGPU.count() * 1.0) << endl; // Around 47 times faster
 
     free(A); free(B); free(C);
     return 0;

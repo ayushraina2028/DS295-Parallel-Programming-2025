@@ -3,16 +3,16 @@ Dataset size: 150 points, 4 dimensions
 Components: 3
 
 --- Overall Performance ---
-Total runtime: 0.107418 seconds
-Total iterations: 43
-Average iteration time: 0.00247395 seconds
+Total runtime: 3.26583 seconds
+Total iterations: 10000
+Average iteration time: 0.000321264 seconds
 Prediction time: 0 seconds
 
 --- Component Breakdown ---
-Initialization: 1.6704e-05 seconds
-E-step total: 0.101603 seconds (94.5873%)
-M-step total: 0.00392235 seconds (3.65149%)
+Initialization: 1.8357e-05 seconds
+E-step total: 2.04948 seconds (62.7553%)
+M-step total: 0.925588 seconds (28.3416%)
 
 --- Per Iteration Statistics ---
-Average E-step time: 0.00236287 seconds
-Average M-step time: 9.12174e-05 seconds
+Average E-step time: 0.000204948 seconds
+Average M-step time: 9.25588e-05 seconds

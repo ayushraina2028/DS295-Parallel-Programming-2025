@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.2.6)  30 APR 2025 07:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.6.7)  31 AUG 2025 15:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/ayushraina/Desktop/6thSemester/ParallelProgramming/project_report_template/template.tex
-(/home/ayushraina/Desktop/6thSemester/ParallelProgramming/project_report_template/template.tex
+**/home/ayush/Desktop/6thSemester/ParallelProgramming/project_report_template/template.tex
+(/home/ayush/Desktop/6thSemester/ParallelProgramming/project_report_template/template.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (./IEEEtran.cls
@@ -312,74 +312,113 @@ LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 33
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-
-LaTeX Warning: Reference `experiments' on page 1 undefined on input line 60.
+Underfull \hbox (badness 1735) in paragraph at lines 60--61
+[]\OT1/ptm/b/n/10 Memory Re-quire-ments: \OT1/ptm/m/n/10 Stor-ing re-spon-si-bil-i-ties for
+ []
 
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 ]
-Overfull \hbox (17.41887pt too wide) detected at line 132
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (17.41887pt too wide) detected at line 154
 [][] \OMS/cmsy/m/n/10 N\OT1/cmr/m/n/10 (\OT1/cmr/bx/n/10 x\OMS/cmsy/m/n/10 j[]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 ) = \OMS/cmsy/m/n/10 ^^@[] []\OT1/cmr/m/n/10 (2\OML/cmm/m/it/10 ^^Y\OT1/cmr/m/n/10 ) \OMS/cmsy/m/n/10 ^^@ [] [] j[]j ^^@ []\OT1/cmr/m/n/10 (\OT1/cmr/bx/n/10 x \OMS/cmsy/m/n/10 ^^@ []\OT1/cmr/m/n/10 )[][][](\OT1/cmr/bx/n/10 x \OMS/cmsy/m/n/10 ^^@ []\OT1/cmr/m/n/10 )
  []
 
-LaTeX Font Info:    Trying to load font information for OMS+ptm on input line 145.
+[2]
+Underfull \hbox (badness 10000) in paragraph at lines 182--183
+[] []$[] \OMS/cmsy/m/n/10   [] \OT1/cmr/m/n/10 + [][] \OMS/cmsy/m/n/10 ^^B
+ []
+
+LaTeX Font Info:    Trying to load font information for OMS+ptm on input line 198.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 145.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 198.
 
-Overfull \hbox (7.01385pt too wide) in paragraph at lines 147--148
+Overfull \hbox (7.01385pt too wide) in paragraph at lines 200--201
 [] []$[] \OMS/cmsy/m/n/10   []\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; []\OT1/cmr/m/n/10 [\OML/cmm/m/it/10 i; k\OT1/cmr/m/n/10 ])$ 
  []
 
 
-Underfull \hbox (badness 2846) in paragraph at lines 152--153
+Underfull \hbox (badness 2846) in paragraph at lines 205--206
 [] []$[] \OMS/cmsy/m/n/10   [] \OT1/cmr/m/n/10 + []([][\OML/cmm/m/it/10 i; k\OT1/cmr/m/n/10 ] \OMS/cmsy/m/n/10 ^^@
  []
 
-[2]
-Underfull \hbox (badness 4060) in paragraph at lines 180--181
+
+Underfull \hbox (badness 4060) in paragraph at lines 233--234
 []\OT1/ptm/b/n/10 Register Op-ti-miza-tion\OT1/ptm/m/n/10 : Crit-i-cal vari-ables such as
  []
 
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 182.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 235.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-<executionTimes1.png, id=22, 927.9468pt x 710.4141pt>
+Underfull \hbox (badness 10000) in paragraph at lines 244--245
+\OT1/ptm/m/n/10 con-fig-u-ra-tion sig-nif-i-cantly im-pacts GPU per-for-mance.
+ []
+
+
+Underfull \hbox (badness 1783) in paragraph at lines 244--245
+\OT1/ptm/m/n/10 Through ex-ten-sive bench-mark-ing, we de-ter-mined that a
+ []
+
+
+Underfull \hbox (badness 1603) in paragraph at lines 244--245
+\OT1/ptm/m/n/10 thread block size of 256 pro-vides the op-ti-mal bal-ance
+ []
+
+
+Underfull \hbox (badness 2088) in paragraph at lines 244--245
+\OT1/ptm/m/n/10 be-tween oc-cu-pancy, reg-is-ter us-age, and mem-ory ac-cess
+ []
+
+[3]
+<executionTimes1.png, id=27, 927.9468pt x 710.4141pt>
 File: executionTimes1.png Graphic file (type png)
 <use executionTimes1.png>
-Package pdftex.def Info: executionTimes1.png  used on input line 257.
+Package pdftex.def Info: executionTimes1.png  used on input line 361.
 (pdftex.def)             Requested size: 129.0pt x 98.75269pt.
-<speedups.png, id=24, 927.9468pt x 855.6768pt>
+<speedups.png, id=29, 927.9468pt x 855.6768pt>
 File: speedups.png Graphic file (type png)
 <use speedups.png>
-Package pdftex.def Info: speedups.png  used on input line 258.
+Package pdftex.def Info: speedups.png  used on input line 362.
 (pdftex.def)             Requested size: 103.19843pt x 95.1562pt.
- [3 <./executionTimes1.png> <./speedups.png>]
-<azizi1.png, id=31, 855.6768pt x 494.3268pt>
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 384--385
+\OT1/ptm/m/n/10 the time com-plex-ity re-duces to ap-prox-i-mately
+ []
+
+<azizi1.png, id=33, 855.6768pt x 494.3268pt>
 File: azizi1.png Graphic file (type png)
 <use azizi1.png>
-Package pdftex.def Info: azizi1.png  used on input line 274.
+Package pdftex.def Info: azizi1.png  used on input line 394.
 (pdftex.def)             Requested size: 129.0pt x 74.52295pt.
-<azizi2.png, id=32, 855.6768pt x 494.3268pt>
+<azizi2.png, id=34, 855.6768pt x 494.3268pt>
 File: azizi2.png Graphic file (type png)
 <use azizi2.png>
-Package pdftex.def Info: azizi2.png  used on input line 275.
+Package pdftex.def Info: azizi2.png  used on input line 395.
 (pdftex.def)             Requested size: 103.19843pt x 59.61082pt.
-<azizi3.png, id=33, 859.2903pt x 498.663pt>
+<azizi3.png, id=35, 859.2903pt x 498.663pt>
 File: azizi3.png Graphic file (type png)
 <use azizi3.png>
-Package pdftex.def Info: azizi3.png  used on input line 283.
+Package pdftex.def Info: azizi3.png  used on input line 403.
 (pdftex.def)             Requested size: 180.60315pt x 104.80602pt.
-<iris1.png, id=34, 890.3664pt x 674.2791pt>
+[5 <./executionTimes1.png> <./speedups.png> <./azizi1.png> <./azizi2.png> <./azizi3.png>]
+<iris1.png, id=44, 890.3664pt x 674.2791pt>
 File: iris1.png Graphic file (type png)
 <use iris1.png>
-Package pdftex.def Info: iris1.png  used on input line 294.
+Package pdftex.def Info: iris1.png  used on input line 417.
 (pdftex.def)             Requested size: 180.60315pt x 136.76712pt.
- [4 <./azizi1.png> <./azizi2.png> <./azizi3.png> <./iris1.png>]
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -391,31 +430,25 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[5
-
-] (./template.aux)
+[6 <./iris1.png>] (./template.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
  ) 
 Here is how much of TeX's memory you used:
- 5497 strings out of 474222
- 85493 string characters out of 5748734
- 1953975 words of memory out of 5000000
- 27681 multiletter control sequences out of 15000+600000
+ 5498 strings out of 474222
+ 85511 string characters out of 5748734
+ 1957975 words of memory out of 5000000
+ 27682 multiletter control sequences out of 15000+600000
  598195 words of font info for 112 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,14n,65p,1474b,556s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on template.pdf (5 pages, 670590 bytes).
+ 57i,14n,65p,1469b,637s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on template.pdf (6 pages, 690243 bytes).
 PDF statistics:
- 104 PDF objects out of 1000 (max. 8388607)
- 56 compressed objects within 1 object stream
+ 112 PDF objects out of 1000 (max. 8388607)
+ 61 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  31 words of extra memory for PDF output out of 10000 (max. 10000000)
 
