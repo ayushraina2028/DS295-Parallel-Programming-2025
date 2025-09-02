@@ -6,6 +6,56 @@ A high-performance implementation of the Expectation-Maximization (EM) algorithm
 
 This project implements a numerically stable and highly optimized EM algorithm that achieves significant speedups over traditional CPU-only implementations. The hybrid approach leverages the computational power of GPUs for the E-step while utilizing CPU parallelization for the M-step, balancing performance with memory transfer overhead.
 
+## Experimental Results
+
+### Performance Evaluation on Synthetic Data
+
+We evaluated our hybrid implementation on synthetic datasets of varying sizes (2M, 4M, 6M, 8M, and 10M data points) with 5 clusters and 10-dimensional data.
+
+#### Execution Times and Speedups
+
+![Performance Results](../project_report_template/executionTimes1.png)
+![Speedup Results](../project_report_template//speedups.png)
+
+**Key Findings:**
+- **E-step Performance**: GPU implementation achieves ~220-234× speedup over sequential, while CPU parallelization achieves only ~9.8×
+- **M-step Performance**: CPU parallelization shows ~4.0× speedup, while GPU performs poorly (~0.1×) due to synchronization overhead
+- **Overall Performance**: Hybrid approach delivers 70-74× total speedup, significantly outperforming pure-GPU (~4.0×) or pure-CPU (~9.0×) implementations
+
+#### Computational Complexity Analysis
+
+- **Sequential E-step**: O(NKD²) operations
+- **GPU-Accelerated E-step**: O(KD² + log N) with O(N) processors
+- **Sequential M-step**: O(NKD²) operations  
+- **OpenMP-Accelerated M-step**: O(NKD²/P) with P CPU threads
+
+### Comparison with Azizi's Implementation
+
+We compared our hybrid implementation with Python, NumPy, Numba, and CuPy implementations on a 1 million point dataset.
+
+![Azizi Comparison 1](../project_report_template//azizi1.png)
+![Azizi Comparison 2](../project_report_template//azizi2.png)
+
+**Results:**
+- When using the same initial parameters, our implementation converged in fewer iterations
+- Our enhanced numerical stability techniques provide superior convergence properties
+- While per-iteration time may be higher for smaller datasets, we require fewer iterations overall
+
+![Azizi Comparison 3](../project_report_template//azizi3.png)
+
+### Real-World Data: IRIS Dataset
+
+Tested on the classic IRIS dataset (150 samples, 3 species, 4 features):
+
+![IRIS Results](../project_report_template//iris1.png)
+
+**Performance Metrics:**
+- **Misclassification Rate (MCR)**: 0.03333 (only 5 errors out of 150 samples)
+- **Adjusted Rand Index (ARI)**: 0.90387
+- **F-measure**: 0.96658
+
+The results demonstrate excellent clustering accuracy with close correspondence between true labels and predicted clusters.
+
 ## Key Features
 
 - **Hybrid GPU-CPU Architecture**: GPU-accelerated E-step with CPU-parallelized M-step
@@ -132,56 +182,6 @@ GaussianMixtureModel gmm(
 - **Shared memory usage**: Reduces global memory access
 - **Coalesced memory access**: Optimizes GPU memory bandwidth
 - **Adaptive regularization**: Maintains positive definiteness
-
-## Experimental Results
-
-### Performance Evaluation on Synthetic Data
-
-We evaluated our hybrid implementation on synthetic datasets of varying sizes (2M, 4M, 6M, 8M, and 10M data points) with 5 clusters and 10-dimensional data.
-
-#### Execution Times and Speedups
-
-![Performance Results](../project_report_template/executionTimes1.png)
-![Speedup Results](../project_report_template//speedups.png)
-
-**Key Findings:**
-- **E-step Performance**: GPU implementation achieves ~220-234× speedup over sequential, while CPU parallelization achieves only ~9.8×
-- **M-step Performance**: CPU parallelization shows ~4.0× speedup, while GPU performs poorly (~0.1×) due to synchronization overhead
-- **Overall Performance**: Hybrid approach delivers 70-74× total speedup, significantly outperforming pure-GPU (~4.0×) or pure-CPU (~9.0×) implementations
-
-#### Computational Complexity Analysis
-
-- **Sequential E-step**: O(NKD²) operations
-- **GPU-Accelerated E-step**: O(KD² + log N) with O(N) processors
-- **Sequential M-step**: O(NKD²) operations  
-- **OpenMP-Accelerated M-step**: O(NKD²/P) with P CPU threads
-
-### Comparison with Azizi's Implementation
-
-We compared our hybrid implementation with Python, NumPy, Numba, and CuPy implementations on a 1 million point dataset.
-
-![Azizi Comparison 1](../project_report_template//azizi1.png)
-![Azizi Comparison 2](../project_report_template//azizi2.png)
-
-**Results:**
-- When using the same initial parameters, our implementation converged in fewer iterations
-- Our enhanced numerical stability techniques provide superior convergence properties
-- While per-iteration time may be higher for smaller datasets, we require fewer iterations overall
-
-![Azizi Comparison 3](../project_report_template//azizi3.png)
-
-### Real-World Data: IRIS Dataset
-
-Tested on the classic IRIS dataset (150 samples, 3 species, 4 features):
-
-![IRIS Results](../project_report_template//iris1.png)
-
-**Performance Metrics:**
-- **Misclassification Rate (MCR)**: 0.03333 (only 5 errors out of 150 samples)
-- **Adjusted Rand Index (ARI)**: 0.90387
-- **F-measure**: 0.96658
-
-The results demonstrate excellent clustering accuracy with close correspondence between true labels and predicted clusters.
 
 ## Output Files
 
